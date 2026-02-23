@@ -1,6 +1,19 @@
-# X-Aegis 🛡️📉
+# X-Aegis Frontend & Dashboard 🛡️📊
 
-![X-Aegis Banner](https://placehold.co/1200x400/212121/ffffff/png?text=X-Aegis+Volatility+Shield)
+<p align="center">
+  <img src="./logo.jpeg" alt="X-Aegis Logo" width="200" />
+</p>
+
+```text
+╔════════════════════════════════════════════════════════════════════╗
+║                                                                    ║
+║           X - A E G I S   F R O N T E N D   &   D A P P            ║
+║                                                                    ║
+║               The Volatility Shield Dashboard                      ║
+║           Decentralized Asset Management on Stellar                ║
+║                                                                    ║
+╚════════════════════════════════════════════════════════════════════╝
+```
 
 > **A Stablecoin Volatility Shield for Weak Currencies.**
 
@@ -31,12 +44,12 @@ graph TD
     User((User)) -->|Deposit USDC| UI[X-Aegis Dashboard]
     UI -->|Invoke| Vault[Soroban Vault Contract]
     
-    subgraph AI Engine
+    subgraph "AI Engine (Backend)"
         Data[Central Bank/FX APIs] -->|Feed| Model[FX Forecast Model]
         Model -->|Signal| Oracle[Rebalance Oracle]
     end
 
-    subgraph On-Chain Strategy
+    subgraph "On-Chain Strategy (Soroban)"
         Oracle -->|Trigger| Vault
         Vault -->|Alloc 40%| USDC[USDC Reserves]
         Vault -->|Alloc 30%| LP[Stellar LP Positions]
@@ -55,8 +68,8 @@ graph TD
 *   Yield allocation logic
 *   Stellar liquidity integration
 
-**AI:**
-*   Time-series FX forecasting
+**AI/Backend:**
+*   Time-series FX forecasting (Python/FastAPI)
 *   Inflation modeling
 *   Risk scoring engine
 
@@ -66,8 +79,10 @@ graph TD
 *   Market price feeds
 
 **Frontend:**
-*   Portfolio dashboard
-*   Risk visualization UI
+*   **Next.js 14**: App Router dashboard
+*   **Tailwind CSS**: Institutional styling
+*   **Freighter Wallet**: Stellar connectivity
+*   **Shadcn/UI**: Data visualization components
 
 ---
 
@@ -75,35 +90,31 @@ graph TD
 
 ### 1. Prerequisites
 *   Node.js v18+
-*   Rust & Cargo
-*   Freighter Wallet
+*   Freighter Wallet extension
 
 ### 2. Local Setup
-(This repo is currently local-only).
 
 > [!IMPORTANT]
-> This repository only contains the frontend code. For the smart contracts and AI engine logic, please refer to the [Aegis-contract](https://github.com/ChainLab-X/Aegis-contract) repository.
+> This repository contains the **Frontend & Integration** logic. For the core protocol contracts, see [Aegis-contract](https://github.com/X-Aegis/Aegis-contract). For the AI forecasting engine, see [aegis-backend-ai](https://github.com/X-Aegis/aegis-backend-ai).
 
-**Verify Integrity:**
-```bash
-cargo build --all
-```
-
-
-**Setup Frontend:**
+**Setup Dashboard:**
 ```bash
 cd frontend
 npm install
-# Frontend setup instructions go here
+npm run dev
 ```
 
 ---
 
 ## 📚 Documentation & Trackers
 
+*   🎨 **[Frontend Issues](./docs/ISSUES-FRONTEND.md)**
+*   🏛️ **[Smart Contract Issues (External)](https://github.com/X-Aegis/Aegis-contract/issues)** 
+*   🤖 **[Backend & AI Roadmap](https://github.com/X-Aegis/aegis-backend-ai/blob/main/docs/BACKEND_ROADMAP.md)**
 
 Guides:
-*   🌐 **[Frontend Integration Guide](./docs/FRONTEND_GUIDE.md)**
+*   📘 **[Frontend Integration Guide](./docs/FRONTEND_GUIDE.md)**
+*   🌐 **[Smart Contract Integration](./docs/SMARTCONTRACT_GUIDE.md)**
 
 ---
 
