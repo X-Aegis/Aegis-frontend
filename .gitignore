@@ -3,4 +3,5 @@ target/
 smartcontract/target/
 .soroban/
 node_modules/
+node_modules/
 .next/
