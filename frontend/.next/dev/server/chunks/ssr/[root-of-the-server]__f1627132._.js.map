@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 14, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/EMMA/Desktop/aegisfrontend/frontend/app/page.tsx"],"sourcesContent":["export default function Home() {\r\n  return (\r\n    <main className=\"flex min-h-screen flex-col items-center justify-center p-24\">\r\n      <h1 className=\"text-4xl font-bold\">X-Aegis 🛡️</h1>\r\n      <p className=\"mt-4 text-xl\">Volatility Shield for Weak Currencies</p>\r\n      <div className=\"mt-8 p-4 border rounded-lg bg-card\">\r\n        <p className=\"text-muted-foreground\">Frontend scaffolded successfully.</p>\r\n        <p className=\"text-sm mt-2\">See <code>docs/ISSUES-FRONTEND.md</code> to start building.</p>\r\n      </div>\r\n    </main>\r\n  );\r\n}\r\n"],"names":[],"mappings":";;;;;;AAAe,SAAS;IACtB,qBACE,8OAAC;QAAK,WAAU;;0BACd,8OAAC;gBAAG,WAAU;0BAAqB;;;;;;0BACnC,8OAAC;gBAAE,WAAU;0BAAe;;;;;;0BAC5B,8OAAC;gBAAI,WAAU;;kCACb,8OAAC;wBAAE,WAAU;kCAAwB;;;;;;kCACrC,8OAAC;wBAAE,WAAU;;4BAAe;0CAAI,8OAAC;0CAAK;;;;;;4BAA8B;;;;;;;;;;;;;;;;;;;AAI5E"}}]
+}
