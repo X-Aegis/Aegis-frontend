@@ -2,3 +2,5 @@ target/
 ** /target/
 smartcontract/target/
 .soroban/
+node_modules/
+.next/
