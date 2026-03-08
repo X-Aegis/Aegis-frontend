@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getProvider, activeNetwork } from "../lib/network";
-import { Contract, TransactionBuilder, Account, xdr } from "@stellar/stellar-sdk";
+import { Contract, SorobanRpc, Account } from "@stellar/stellar-sdk";
 import { isConnected, requestAccess } from "@stellar/freighter-api";
 
-// The contract ID should ideally come from an .env file or config
+// Hardcoded network config for this component to avoid conflicts with ongoing PRs
+const RPC_URL = "https://soroban-testnet.stellar.org";
+const NETWORK_PASSPHRASE = "Test SDF Network ; September 2015";
 const VAULT_CONTRACT_ID = "CCWHG2Q4VFY6XCQB4S4A4R6XYLFXSFTNQQYJAY4GZRXF2WYYX3F5YRP";
 
 export function VaultOverviewCard() {
@@ -42,30 +43,14 @@ export function VaultOverviewCard() {
 
     const fetchVaultData = async (userAddr: string) => {
         try {
-            // Create RPC provider based on network.ts
-            const server = getProvider("testnet");
+            const server = new SorobanRpc.Server(RPC_URL);
 
-            // For reading data via simulation, we can use a dummy account
-            const dummyAccount = new Account("GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF", "0");
-            const contract = new Contract(VAULT_CONTRACT_ID);
-
-            // In a real scenario, you'd build actual XDR and simulate to read states like total_assets()
-            // Since we don't have the exact contract ABI loaded here, we mock the RPC response values
-            // based on typical vault implementations (e.g., ERC-4626 equivalent on Soroban).
-
-            // Simulate fetching total_assets and total_shares
-            // E.g., const tx = new TransactionBuilder(dummyAccount, { fee: "100", networkPassphrase: activeNetwork.networkPassphrase })
-            //          .addOperation(contract.call("total_assets")).build();
-            // const sim = await server.simulateTransaction(tx);
-            // const decodedAssets = sim.result.retval...
-
-            // MOCK DATA for demonstration (since there is no live contract to query right now)
+            // MOCK DATA for demonstration
             setTotalAssets(1500000);
             setTotalShares(1200000);
 
             // Simulate fetching user's share balance if connected
             if (userAddr) {
-                // E.g., contract.call("balance", [nativeToScVal(userAddr, { type: 'address' })])
                 setUserBalance(5000);
             } else {
                 setUserBalance(0);
@@ -77,7 +62,6 @@ export function VaultOverviewCard() {
         }
     };
 
-    // Calculate share price (Total Assets / Total Shares)
     const sharePrice = totalAssets && totalShares && totalShares > 0
         ? (totalAssets / totalShares).toFixed(4)
         : "1.0000";
@@ -89,7 +73,7 @@ export function VaultOverviewCard() {
                     <span>🏦</span> Vault Overview
                 </h2>
                 <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full uppercase font-medium">
-                    {activeNetwork.network}
+                    testnet
                 </span>
             </div>
 
