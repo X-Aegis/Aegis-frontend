@@ -1,11 +1,14 @@
 "use client";
 
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { AiInsightStream } from "@/components/AiInsightStream";
 import { VaultOverviewCard } from "../components/VaultOverviewCard";
 import { VaultAPYChart } from "../components/charts/VaultAPYChart";
 import Link from "next/link";
 import { TrendingUp, Shield, BarChart3, ArrowUpRight } from "lucide-react";
-import { useState } from "react";
 import { RiskChart } from "./components/RiskChart";
 import { RiskBadge } from "./components/RiskBadge";
 
