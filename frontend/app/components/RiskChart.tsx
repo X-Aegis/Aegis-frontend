@@ -2,12 +2,12 @@
 
 import React from 'react';
 
-interface DataPoint {
-  time: string;
-  value: number;
+interface RiskChartProps {
+  data?: { date: string; risk: number }[];
+  height?: number;
 }
 
-const mockData: DataPoint[] = [
+const defaultMockData = [
   { time: '00:00', value: 30 },
   { time: '04:00', value: 45 },
   { time: '08:00', value: 25 },
@@ -17,24 +17,31 @@ const mockData: DataPoint[] = [
   { time: '23:59', value: 42 },
 ];
 
-export const RiskChart: React.FC = () => {
+export const RiskChart: React.FC<RiskChartProps> = ({ data: propData, height: propHeight }) => {
   const width = 400;
-  const height = 200;
+  const height = propHeight || 200;
   const padding = 40;
 
-  const maxVal = Math.max(...mockData.map(d => d.value));
+  const chartData = propData 
+    ? propData.map(d => ({ time: d.date, value: d.risk })) 
+    : defaultMockData;
+
+  const maxVal = Math.max(...chartData.map(d => d.value));
   const minVal = 0;
 
-  const points = mockData.map((d, i) => {
-    const x = (i / (mockData.length - 1)) * (width - padding * 2) + padding;
+  const points = chartData.map((d, i) => {
+    const x = (i / (chartData.length - 1)) * (width - padding * 2) + padding;
     const y = height - ((d.value - minVal) / (maxVal - minVal)) * (height - padding * 2) - padding;
     return { x, y };
   });
 
-  const pathData = `M ${points[0].x} ${points[0].y} ` + 
-    points.slice(1).map(p => `L ${p.x} ${p.y}`).join(' ');
+  const pathData = points.length > 0
+    ? `M ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(' ')
+    : '';
 
-  const areaData = `${pathData} L ${points[points.length - 1].x} ${height - padding} L ${points[0].x} ${height - padding} Z`;
+  const areaData = pathData
+    ? `${pathData} L ${points[points.length - 1].x} ${height - padding} L ${points[0].x} ${height - padding} Z`
+    : '';
 
   return (
     <div className="bg-card/50 p-6 rounded-2xl border border-border backdrop-blur-sm">
