@@ -1,9 +1,13 @@
 "use client";
 
+import { AiInsightStream } from "@/components/AiInsightStream";
+import { VaultOverviewCard } from "../components/VaultOverviewCard";
 import { VaultAPYChart } from "../components/charts/VaultAPYChart";
 import Link from "next/link";
 import { TrendingUp, Shield, BarChart3, ArrowUpRight } from "lucide-react";
 import { useState } from "react";
+import { RiskChart } from "./components/RiskChart";
+import { RiskBadge } from "./components/RiskBadge";
 
 export default function Home() {
   return (
@@ -32,7 +36,10 @@ export default function Home() {
       <div className="container mx-auto px-6 py-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight mb-2">Institutional Dashboard</h1>
+            <div className="flex items-center gap-4">
+              <h1 className="text-3xl font-extrabold tracking-tight mb-2">Institutional Dashboard</h1>
+              <RiskBadge level="medium" />
+            </div>
             <p className="text-muted-foreground uppercase text-xs tracking-widest font-semibold flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-primary" />
               Volatility Shield Active
@@ -54,6 +61,8 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
           {/* Main Chart Section */}
           <div className="lg:col-span-2 space-y-6">
+            <VaultOverviewCard />
+            <RiskChart />
             <VaultAPYChart vaultId="main-vault" />
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -101,6 +110,7 @@ export default function Home() {
 
           {/* Sidebar / Stats */}
           <div className="space-y-6">
+            <AiInsightStream />
             <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground p-8 rounded-3xl shadow-2xl shadow-primary/20 relative overflow-hidden">
                <div className="relative z-10">
                   <h2 className="text-2xl font-bold mb-2">Aegis Guard</h2>
