@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { AiInsightStream } from "@/components/AiInsightStream";
 import { VaultOverviewCard } from "../components/VaultOverviewCard";
 import { VaultAPYChart } from "../components/charts/VaultAPYChart";
@@ -43,7 +46,7 @@ export default function Home() {
             </button>
             <Link href="#" className="hover:text-foreground transition-colors">Vaults</Link>
             <Link href="#" className="hover:text-foreground transition-colors">Swap</Link>
-            <Link href="#" className="hover:text-foreground transition-colors">Profile</Link>
+            <Link href="/settings" className="hover:text-foreground transition-colors">Settings</Link>
           </nav>
           <div className="flex items-center gap-4">
             <button 
