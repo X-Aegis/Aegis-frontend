@@ -5,6 +5,7 @@ import { VaultOverviewCard } from "../components/VaultOverviewCard";
 import { VaultAPYChart } from "../components/charts/VaultAPYChart";
 import Link from "next/link";
 import { TrendingUp, Shield, BarChart3, ArrowUpRight } from "lucide-react";
+import { useState } from "react";
 import { RiskChart } from "./components/RiskChart";
 import { RiskBadge } from "./components/RiskBadge";
 
@@ -24,7 +25,7 @@ export default function Home() {
             <Link href="/" className="text-foreground transition-colors">Dashboard</Link>
             <Link href="#" className="hover:text-foreground transition-colors">Vaults</Link>
             <Link href="#" className="hover:text-foreground transition-colors">Swap</Link>
-            <Link href="#" className="hover:text-foreground transition-colors">Profile</Link>
+            <Link href="/settings" className="hover:text-foreground transition-colors">Settings</Link>
           </nav>
           <button className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
             Connect Wallet
