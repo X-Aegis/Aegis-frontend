@@ -1,21 +1,23 @@
 "use client";
 
+import { useTranslations } from 'next-intl';
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { AiInsightStream } from "@/components/AiInsightStream";
-import { VaultOverviewCard } from "../components/VaultOverviewCard";
-import { VaultAPYChart } from "../components/charts/VaultAPYChart";
+import { AiInsightStream } from "../../components/AiInsightStream";
+import { VaultOverviewCard } from "../../components/VaultOverviewCard";
+import { VaultAPYChart } from "../../components/charts/VaultAPYChart";
 import { TransactionHistoryList } from "@/components/transactions/TransactionHistoryList";
 import Link from "next/link";
 import { TrendingUp, Shield, BarChart3, ArrowUpRight } from "lucide-react";
-import { RiskChart } from "./components/RiskChart";
-import { RiskBadge } from "./components/RiskBadge";
-import { WithdrawTab } from "../components/WithdrawTab";
-import { DepositTab } from "../components/DepositTab";
-import { ReferralLinkCard } from "../components/ReferralLinkCard";
-import { ReferralStatsCard } from "../components/ReferralStatsCard";
+import { RiskChart } from "../../components/RiskChart";
+import { RiskBadge } from "../../components/RiskBadge";
+import { WithdrawTab } from "../../components/WithdrawTab";
+import { DepositTab } from "../../components/DepositTab";
+import { ReferralLinkCard } from "../../components/ReferralLinkCard";
+import { ReferralStatsCard } from "../../components/ReferralStatsCard";
 import { Gift, HelpCircle } from "lucide-react";
 
 const MOCK_RISK_DATA = [
@@ -29,6 +31,7 @@ const MOCK_RISK_DATA = [
 ];
 
 export default function Home() {
+  const t = useTranslations('HomePage');
   const [activeTab, setActiveTab] = useState("dashboard");
 
   return (
@@ -47,33 +50,33 @@ export default function Home() {
               onClick={() => setActiveTab("dashboard")}
               className={`${activeTab === "dashboard" ? "text-foreground" : "hover:text-foreground"} transition-colors`}
             >
-              Dashboard
+              {t('dashboard')}
             </button>
             <button 
               onClick={() => setActiveTab("referrals")}
               className={`${activeTab === "referrals" ? "text-foreground" : "hover:text-foreground"} transition-colors`}
-            >
-              Referrals
+             >
+              {t('referrals')}
             </button>
-            <Link href="#" className="hover:text-foreground transition-colors">Vaults</Link>
-            <Link href="#" className="hover:text-foreground transition-colors">Swap</Link>
-            <Link href="/settings" className="hover:text-foreground transition-colors">Settings</Link>
+            <Link href="#" className="hover:text-foreground transition-colors">{t('vaults')}</Link>
+            <Link href="#" className="hover:text-foreground transition-colors">{t('swap')}</Link>
+            <Link href="/settings" className="hover:text-foreground transition-colors">{t('settings')}</Link>
           </nav>
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setActiveTab("deposit")}
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === "deposit" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
             >
-              Deposit
+              {t('deposit')}
             </button>
             <button 
               onClick={() => setActiveTab("withdraw")}
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === "withdraw" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
             >
-              Withdraw
+              {t('withdraw')}
             </button>
             <button className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
-              Connect Wallet
+              {t('connectWallet')}
             </button>
           </div>
         </div>
@@ -85,12 +88,12 @@ export default function Home() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
               <div>
                 <div className="flex items-center gap-4">
-                  <h1 className="text-3xl font-extrabold tracking-tight mb-2">Institutional Dashboard</h1>
-                  <RiskBadge level="medium" />
+                  <h1 className="text-3xl font-extrabold tracking-tight mb-2">{t('title')}</h1>
+                  <RiskBadge level="Medium" />
                 </div>
                 <p className="text-muted-foreground uppercase text-xs tracking-widest font-semibold flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-primary" />
-                  Volatility Shield Active
+                  {t('volatilityShield')}
                 </p>
               </div>
               <div className="flex gap-3">
