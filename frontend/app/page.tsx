@@ -12,6 +12,7 @@ import { TrendingUp, Shield, BarChart3, ArrowUpRight } from "lucide-react";
 import { RiskChart } from "./components/RiskChart";
 import { RiskBadge } from "./components/RiskBadge";
 import { WithdrawTab } from "../components/WithdrawTab";
+import { DepositTab } from "../components/DepositTab";
 
 const MOCK_RISK_DATA = [
   { date: "Mar 01", risk: 24 },
@@ -49,6 +50,12 @@ export default function Home() {
             <Link href="/settings" className="hover:text-foreground transition-colors">Settings</Link>
           </nav>
           <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setActiveTab("deposit")}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === "deposit" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
+            >
+              Deposit
+            </button>
             <button 
               onClick={() => setActiveTab("withdraw")}
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === "withdraw" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
@@ -182,8 +189,10 @@ export default function Home() {
               </div>
             </div>
           </>
-        ) : (
+        ) : activeTab === "withdraw" ? (
           <WithdrawTab />
+        ) : (
+          <DepositTab />
         )}
       </div>
     </main>
