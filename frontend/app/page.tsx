@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { AiInsightStream } from "@/components/AiInsightStream";
 import { VaultOverviewCard } from "../components/VaultOverviewCard";
 import { VaultAPYChart } from "../components/charts/VaultAPYChart";
+import { TransactionHistoryList } from "@/components/transactions/TransactionHistoryList";
 import Link from "next/link";
 import { TrendingUp, Shield, BarChart3, ArrowUpRight } from "lucide-react";
 import { RiskChart } from "./components/RiskChart";
@@ -110,6 +111,8 @@ export default function Home() {
                   <RiskChart data={MOCK_RISK_DATA} height={300} />
                 </div>
                 <VaultAPYChart vaultId="main-vault" />
+
+                <TransactionHistoryList />
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                    <div className="bg-card border border-border p-6 rounded-2xl hover:border-primary/50 transition-colors group cursor-pointer">
