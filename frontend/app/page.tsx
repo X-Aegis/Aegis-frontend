@@ -13,6 +13,9 @@ import { RiskChart } from "./components/RiskChart";
 import { RiskBadge } from "./components/RiskBadge";
 import { WithdrawTab } from "../components/WithdrawTab";
 import { DepositTab } from "../components/DepositTab";
+import { ReferralLinkCard } from "../components/ReferralLinkCard";
+import { ReferralStatsCard } from "../components/ReferralStatsCard";
+import { Gift, HelpCircle } from "lucide-react";
 
 const MOCK_RISK_DATA = [
   { date: "Mar 01", risk: 24 },
@@ -44,6 +47,12 @@ export default function Home() {
               className={`${activeTab === "dashboard" ? "text-foreground" : "hover:text-foreground"} transition-colors`}
             >
               Dashboard
+            </button>
+            <button 
+              onClick={() => setActiveTab("referrals")}
+              className={`${activeTab === "referrals" ? "text-foreground" : "hover:text-foreground"} transition-colors`}
+            >
+              Referrals
             </button>
             <Link href="#" className="hover:text-foreground transition-colors">Vaults</Link>
             <Link href="#" className="hover:text-foreground transition-colors">Swap</Link>
@@ -189,6 +198,49 @@ export default function Home() {
               </div>
             </div>
           </>
+        ) : activeTab === "referrals" ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="lg:col-span-2 space-y-6">
+              <div className="mb-2">
+                <h1 className="text-3xl font-extrabold tracking-tight mb-2">Referral Rewards</h1>
+                <p className="text-muted-foreground">Share X-Aegis with your network and earn a percentage of their protocol fees.</p>
+              </div>
+              <ReferralLinkCard />
+              <ReferralStatsCard />
+            </div>
+            <div className="space-y-6 pt-12">
+               <div className="bg-card border border-border p-6 rounded-2xl">
+                  <h3 className="font-bold mb-4 flex items-center gap-2">
+                    <HelpCircle className="w-4 h-4 text-primary" />
+                    How it works
+                  </h3>
+                  <div className="space-y-4 text-sm">
+                    <div className="space-y-1">
+                      <p className="font-bold">1. Share your link</p>
+                      <p className="text-muted-foreground">Send your unique referral link to friends or share it on social media.</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="font-bold">2. They deposit</p>
+                      <p className="text-muted-foreground">When they deposit into any Aegis vault and generate yield.</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="font-bold">3. You earn</p>
+                      <p className="text-muted-foreground">You receive 1.5% of the protocol fees they generate, paid out in USDC monthly.</p>
+                    </div>
+                  </div>
+               </div>
+
+               <div className="bg-primary/5 border border-primary/20 p-6 rounded-2xl relative overflow-hidden">
+                  <Gift className="absolute -right-4 -bottom-4 w-24 h-24 text-primary/10 -rotate-12" />
+                  <h3 className="font-bold mb-2 text-primary">Milestone Bonus</h3>
+                  <p className="text-sm mb-4 relative z-10">Refer 10 active users to unlock a <span className="font-bold">Permanent 2% Fee Share</span> Tier.</p>
+                  <div className="w-full bg-muted rounded-full h-2 mb-2 relative z-10">
+                    <div className="bg-primary h-full rounded-full" style={{ width: '20%' }}></div>
+                  </div>
+                  <p className="text-[10px] font-bold uppercase text-muted-foreground">2 / 10 Referrals</p>
+               </div>
+            </div>
+          </div>
         ) : activeTab === "withdraw" ? (
           <WithdrawTab />
         ) : (
