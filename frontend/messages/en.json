@@ -1,0 +1,14 @@
+{
+  "HomePage": {
+    "title": "Institutional Dashboard",
+    "volatilityShield": "Volatility Shield Active",
+    "dashboard": "Dashboard",
+    "referrals": "Referrals",
+    "vaults": "Vaults",
+    "swap": "Swap",
+    "settings": "Settings",
+    "deposit": "Deposit",
+    "withdraw": "Withdraw",
+    "connectWallet": "Connect Wallet"
+  }
+}
