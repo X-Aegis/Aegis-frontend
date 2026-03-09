@@ -1,7 +1,26 @@
-target/
-** /target/
-smartcontract/target/
-.soroban/
+# dependencies
 node_modules/
-node_modules/
+**/node_modules/
+
+# next.js
 .next/
+**/.next/
+out/
+
+# testing
+coverage/
+
+# production
+build/
+
+# misc
+.DS_Store
+*.pem
+*.tsbuildinfo
+next-env.d.ts
+
+# local env files
+.env*.local
+
+# vercel
+.vercel

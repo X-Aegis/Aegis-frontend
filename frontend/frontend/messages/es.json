@@ -1,0 +1,14 @@
+{
+  "HomePage": {
+    "title": "Panel Institucional",
+    "volatilityShield": "Escudo de Volatilidad Activo",
+    "dashboard": "Panel",
+    "referrals": "Referidos",
+    "vaults": "Bóvedas",
+    "swap": "Intercambiar",
+    "settings": "Ajustes",
+    "deposit": "Depositar",
+    "withdraw": "Retirar",
+    "connectWallet": "Conectar Billetera"
+  }
+}
