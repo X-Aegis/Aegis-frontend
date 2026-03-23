@@ -1,0 +1,65 @@
+name: Aegis Frontend Review
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  review:
+    name: Frontend PR Audit
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package-lock.json'
+
+      - name: Review Dashboard Build
+        id: frontend_review
+        continue-on-error: true
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      - name: ❌ Handle Review Failure
+        if: steps.frontend_review.outcome == 'failure'
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} --body "### ❌ Institutional Review Required
+          
+          Inconsistencies were found in the frontend build or structural integrity.
+          
+          **Required Action:**
+          1. **Review logs**: Review the logs to identify the build errors.
+          2. **Audit Alignment**: Ensure the code aligns with our project standards.
+          3. **Stay in Sync**: Ensure your local environment is synchronized with the upstream project.
+          
+          *This PR cannot be merged until the build is successful.*"
+          exit 1
+
+      - name: ✅ Handle Review Success
+        if: steps.frontend_review.outcome == 'success'
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} --body "### ✅ Review Successful
+          
+          The build integrity of this submission has been verified. 
+          
+          **Status:** Perfect Alignment.
+          **Action:** Merging into \`main\`...
+          
+          *Project maintained by @bbkenny.*"
+          
+          gh pr merge ${{ github.event.pull_request.number }} --merge --auto

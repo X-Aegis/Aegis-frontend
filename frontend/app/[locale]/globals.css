@@ -15,7 +15,8 @@
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted-foreground: 215.4 16.3% 42.9%;
+    /* Refined for better contrast */
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
@@ -53,7 +54,8 @@
   * {
     @apply border-border;
   }
+
   body {
-    @apply bg-background text-foreground shrink-0;
+    @apply bg-background text-foreground shrink-0 transition-colors duration-500 ease-in-out;
   }
 }
