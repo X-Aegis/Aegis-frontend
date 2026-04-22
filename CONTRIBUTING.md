@@ -42,6 +42,31 @@ We follow a strict **Modular Commit** philosophy to ensure history is readable a
 4.  **Test**: Run `cargo test` (contracts) or `npm run test` (frontend).
 5.  **Commit**: Follow the commit guidelines above.
 
+## 🔗 Pull Request Checklist
+
+When opening a PR, follow these steps:
+
+1.  **Link the Issue**: In your PR description, use:
+    - `Closes #26` — when your PR resolves the issue
+    - `Fixes #26` — when your PR fixes a bug
+    - `Resolves #26` — when your PR fully resolves it
+    Example:
+    ```
+    ## Summary
+    - Added detailed event logging for AI analysis
+    
+    Closes #26
+    ```
+
+2.  **Tag the Maintainer**: After opening your PR, go to the issue and drop a comment:
+    - Tag `@maintainer` (the project maintainer(s))
+    - Let them know your PR is ready for review
+    - Ask if anything else needs to be addressed
+    Example:
+    > Hey @maintainer, got a PR ready for this. Want to check it out when you get a chance?
+
+3.  **Keep PRs Small**: Only fix what's needed. Don't rewrite entire files or change hundreds of lines when the issue only needs a few lines fixed. Real devs fix the specific problem, not everything.
+
 ## Getting Help
 
 Read the **Integration Guides** located in the `docs/` directory for detailed setup instructions.
