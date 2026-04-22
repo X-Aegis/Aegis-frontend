@@ -58,12 +58,13 @@ When opening a PR, follow these steps:
     Closes #26
     ```
 
-2.  **Tag the Maintainer**: After opening your PR, go to the issue and drop a comment:
-    - Tag `@maintainer` (the project maintainer(s))
-    - Let them know your PR is ready for review
-    - Ask if anything else needs to be addressed
-    Example:
-    > Hey @maintainer, got a PR ready for this. Want to check it out when you get a chance?
+2.  **Tag Both Issue & PR**: 
+    - On the **issue**: Comment tagging the author (`@username`) to let them know you're working on it
+    - On the **PR**: Tag `@maintainer` to notify maintainer(s) review is ready
+    Example on issue:
+    > Hey @thebabalola, I've got a PR ready for this. Want to check it out when you get a chance?
+    Example on PR comment:
+    > Hey @maintainer, PR is ready for review!
 
 3.  **Keep PRs Small**: Only fix what's needed. Don't rewrite entire files or change hundreds of lines when the issue only needs a few lines fixed. Real devs fix the specific problem, not everything.
 
