@@ -24,6 +24,7 @@ export function WithdrawTab() {
     const [amount, setAmount] = useState<string>("");
     const [status, setStatus] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [estimatedFee, setEstimatedFee] = useState<string>("Loading...");
 
     // In a real dApp, you would fetch this from the contract directly using a read-only transaction.
     // For the UI logic scope, we mock a sufficient balance validation.
@@ -41,7 +42,17 @@ export function WithdrawTab() {
                 console.error("Connection check failed:", e);
             }
         }
+        async function fetchFee() {
+            try {
+                const server = new SorobanRpc.Server(RPC_URL);
+                const feeStats = await server.getFeeStats();
+                setEstimatedFee(`${feeStats.sorobanInclusionFee.min} stroops`);
+            } catch (e) {
+                setEstimatedFee("100 stroops (fallback)");
+            }
+        }
         checkConnection();
+        fetchFee();
     }, []);
 
     const handleConnect = async () => {
@@ -189,6 +200,11 @@ export function WithdrawTab() {
                         <span>Available Balance:</span>
                         <span>{mockUserBalance} USDC</span>
                     </div>
+                </div>
+
+                <div className="flex justify-between items-center text-sm text-muted-foreground bg-secondary/20 p-2 rounded">
+                    <span>Estimated Network Fee:</span>
+                    <span>{estimatedFee}</span>
                 </div>
 
                 <button
