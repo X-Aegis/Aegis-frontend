@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '../../i18n/routing';
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const metadata: Metadata = {
   title: "X-Aegis",
@@ -31,7 +32,9 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider messages={messages}>
           <Providers>
-            {children}
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
           </Providers>
         </NextIntlClientProvider>
       </body>

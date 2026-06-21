@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import {
     Contract,
     TransactionBuilder,
@@ -14,20 +15,16 @@ import {
     signTransaction,
 } from "@stellar/freighter-api";
 
-// Assuming we are on testnet for the scope of this frontend
-const CONTRACT_ID = "CCWHG2Q4VFY6XCQB4S4A4R6XYLFXSFTNQQYJAY4GZRXF2WYYX3F5YRP"; // Placeholder contract ID
+const CONTRACT_ID = "CCWHG2Q4VFY6XCQB4S4A4R6XYLFXSFTNQQYJAY4GZRXF2WYYX3F5YRP";
 const RPC_URL = "https://soroban-testnet.stellar.org";
 const NETWORK_PASSPHRASE = "Test SDF Network ; September 2015";
 
 export function DepositTab() {
     const [address, setAddress] = useState<string>("");
     const [amount, setAmount] = useState<string>("");
-    const [status, setStatus] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [estimatedFee, setEstimatedFee] = useState<string>("Loading...");
 
-    // In a real dApp, you would fetch this from the contract directly using a read-only transaction.
-    // For the UI logic scope, we mock a sufficient balance validation.
     const mockUserBalance = 5000.0;
 
     useEffect(() => {
@@ -47,7 +44,7 @@ export function DepositTab() {
                 const server = new SorobanRpc.Server(RPC_URL);
                 const feeStats = await server.getFeeStats();
                 setEstimatedFee(`${feeStats.sorobanInclusionFee.min} stroops`);
-            } catch (e) {
+            } catch {
                 setEstimatedFee("100 stroops (fallback)");
             }
         }
@@ -58,58 +55,57 @@ export function DepositTab() {
     const handleConnect = async () => {
         try {
             if (!(await isConnected())) {
-                setStatus("Please install Freighter wallet extension!");
+                toast.error("Please install Freighter wallet extension!");
                 return;
             }
             const addr = await requestAccess();
-            if (addr && typeof addr === "string") setAddress(addr);
-            setStatus("");
-        } catch (e: any) {
-            setStatus("Failed to connect: " + e.message);
+            if (addr && typeof addr === "string") {
+                setAddress(addr);
+                toast.success("Wallet connected successfully.");
+            }
+        } catch (e: unknown) {
+            toast.error("Failed to connect: " + (e instanceof Error ? e.message : String(e)));
         }
     };
 
     const handleDeposit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!address) {
-            setStatus("Please connect your wallet first.");
+            toast.warning("Please connect your wallet first.");
             return;
         }
 
         const depositAmount = parseFloat(amount);
         if (isNaN(depositAmount) || depositAmount <= 0) {
-            setStatus("Please enter a valid amount greater than 0.");
+            toast.warning("Please enter a valid amount greater than 0.");
             return;
         }
 
         if (depositAmount > mockUserBalance) {
-            setStatus(`Insufficient balance. (Available: ${mockUserBalance})`);
+            toast.error(`Insufficient balance. (Available: ${mockUserBalance})`);
             return;
         }
 
         setIsLoading(true);
-        setStatus("Initiating deposit...");
+        const toastId = toast.loading("Initiating deposit...");
 
         try {
             const server = new SorobanRpc.Server(RPC_URL);
 
-            setStatus("Fetching account details...");
+            toast.loading("Fetching account details...", { id: toastId });
             const account = await server.getAccount(address);
 
-            setStatus("Building transaction...");
+            toast.loading("Building transaction...", { id: toastId });
             const contract = new Contract(CONTRACT_ID);
 
-            // Building XDR for the deposit call.
-            // E.g., fn deposit(from: Address, amount: i128)
             const tx = new TransactionBuilder(account, {
-                fee: "1000", // A static fee for the builder, actual fee is calculated during simulation
+                fee: "1000",
                 networkPassphrase: NETWORK_PASSPHRASE,
             })
                 .addOperation(
-                    contract.call("deposit",
+                    contract.call(
+                        "deposit",
                         nativeToScVal(address, { type: "address" }),
-                        // Assuming the contract counts amount in stroops (1 XLM = 10_000_000 stroops).
-                        // Wrapping string so bigints handle correctly
                         nativeToScVal(
                             (BigInt(Math.floor(depositAmount * 10_000_000))).toString(),
                             { type: "i128" }
@@ -119,40 +115,37 @@ export function DepositTab() {
                 .setTimeout(TimeoutInfinite)
                 .build();
 
-            setStatus("Simulating transaction for fees and structure...");
+            toast.loading("Simulating transaction...", { id: toastId });
             const sim = await server.simulateTransaction(tx);
             if (!SorobanRpc.Api.isSimulationSuccess(sim)) {
-                setStatus("Simulation failed. Check console for details.");
+                toast.error("Simulation failed. Check console for details.", { id: toastId });
                 console.error("Simulation failed:", sim);
                 return;
             }
 
-            setStatus("Assembling transaction...");
+            toast.loading("Assembling transaction...", { id: toastId });
             const preparedTxBuilder = SorobanRpc.assembleTransaction(tx, sim);
 
-            setStatus("Please sign the transaction in Freighter...");
+            toast.loading("Please sign the transaction in Freighter...", { id: toastId });
             const signedXdr = await signTransaction(preparedTxBuilder.build().toXDR(), {
                 networkPassphrase: NETWORK_PASSPHRASE,
             });
 
-            setStatus("Submitting to network...");
-            const txToSubmit = TransactionBuilder.fromXDR(
-                signedXdr,
-                NETWORK_PASSPHRASE
-            );
+            toast.loading("Submitting to network...", { id: toastId });
+            const txToSubmit = TransactionBuilder.fromXDR(signedXdr, NETWORK_PASSPHRASE);
             const result = await server.sendTransaction(txToSubmit);
 
             if (result.status !== "PENDING") {
-                setStatus("Transaction submission failed.");
+                toast.error("Transaction submission failed.", { id: toastId });
                 console.error("Submission failed:", result);
                 return;
             }
 
-            setStatus(`Transaction broadcasted successfully! Hash: ${result.hash}`);
-            setAmount(""); // reset form
-        } catch (error: any) {
+            toast.success(`Deposit successful! Hash: ${result.hash}`, { id: toastId });
+            setAmount("");
+        } catch (error: unknown) {
             console.error(error);
-            setStatus("Error: " + error.message);
+            toast.error("Error: " + (error instanceof Error ? error.message : String(error)), { id: toastId });
         } finally {
             setIsLoading(false);
         }
@@ -215,19 +208,6 @@ export function DepositTab() {
                     {isLoading ? "Processing..." : "Deposit"}
                 </button>
             </form>
-
-            {status && (
-                <div
-                    className={`mt-4 p-3 rounded text-sm ${status.includes("Error") || status.includes("failed") || status.includes("Insufficient")
-                        ? "bg-red-500/10 text-red-500"
-                        : status.includes("successfully")
-                            ? "bg-emerald-500/10 text-emerald-500"
-                            : "bg-blue-500/10 text-blue-500"
-                        }`}
-                >
-                    {status}
-                </div>
-            )}
         </div>
     );
 }
