@@ -63,41 +63,41 @@ export const AiInsightStream: React.FC = () => {
   const getMessageStyle = (type: InsightType) => {
     switch (type) {
       case "REBALANCE":
-        return "text-[#00ffcc] font-bold border-l-2 border-[#00ffcc] pl-2 bg-[#00ffcc]/10";
+        return "text-primary font-bold border-l-2 border-primary pl-2 bg-primary/10";
       case "WARNING":
-        return "text-yellow-400 font-medium";
+        return "text-yellow-600 dark:text-yellow-400 font-medium";
       default:
-        return "text-gray-400";
+        return "text-muted-foreground";
     }
   };
 
   return (
-    <div className="w-full max-w-2xl bg-[#0a0a0b] rounded-xl border border-white/10 overflow-hidden shadow-2xl">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-white/5">
+    <div className="w-full max-w-2xl bg-card rounded-xl border border-border overflow-hidden shadow-lg">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-accent/30">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-          <h2 className="text-sm font-semibold text-white/90 uppercase tracking-wider">AI Insight Stream</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wider">AI Insight Stream</h2>
         </div>
-        <div className="text-[10px] text-gray-500 font-mono">LIVE_FEED_v1.0</div>
+        <div className="text-[10px] text-muted-foreground font-mono">LIVE_FEED_v1.0</div>
       </div>
       
       <div 
         ref={scrollRef}
-        className="h-[300px] overflow-y-auto p-4 space-y-3 font-mono text-xs custom-scrollbar"
+        className="h-48 sm:h-56 md:h-[300px] overflow-y-auto p-4 space-y-3 font-mono text-xs custom-scrollbar"
       >
         {insights.map((insight) => (
-          <div 
-            key={insight.id} 
-            className={`p-2 rounded transition-all duration-300 hover:bg-white/5 ${getMessageStyle(insight.type)}`}
-          >
+            <div 
+              key={insight.id} 
+              className={`p-2 rounded transition-all duration-300 hover:bg-accent/50 ${getMessageStyle(insight.type)}`}
+            >
             <div className="flex justify-between items-start gap-4">
               <span className="flex-1">{insight.message}</span>
-              <span className="text-[10px] text-gray-600 whitespace-nowrap">{insight.timestamp}</span>
+              <span className="text-[10px] text-muted-foreground/60 whitespace-nowrap shrink-0">{insight.timestamp}</span>
             </div>
             {insight.type === "REBALANCE" && (
               <div className="mt-1 flex items-center gap-1">
-                <span className="w-3 h-[1px] bg-[#00ffcc]" />
-                <span className="text-[9px] uppercase tracking-tighter opacity-80">Execution Confirmed</span>
+                <span className="w-3 h-[1px] bg-primary" />
+                <span className="text-[9px] uppercase tracking-tighter text-muted-foreground/70">Execution Confirmed</span>
               </div>
             )}
           </div>
@@ -112,11 +112,11 @@ export const AiInsightStream: React.FC = () => {
           background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.1);
+          background: hsl(var(--border));
           border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.2);
+          background: hsl(var(--muted-foreground) / 0.3);
         }
       `}</style>
     </div>

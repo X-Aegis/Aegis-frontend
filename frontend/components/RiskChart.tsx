@@ -32,7 +32,7 @@ export function RiskChart({ data, height = 200 }: RiskChartProps) {
                 <svg
                     viewBox={`0 0 400 ${height}`}
                     className="w-full h-full overflow-visible"
-                    preserveAspectRatio="none"
+                    preserveAspectRatio="xMidYMid meet"
                 >
                     {/* Grid lines */}
                     <line x1="0" y1="0" x2="400" y2="0" stroke="currentColor" strokeOpacity="0.1" />
@@ -81,9 +81,9 @@ export function RiskChart({ data, height = 200 }: RiskChartProps) {
             </div>
 
             {/* Date labels */}
-            <div className="flex justify-between mt-4">
+            <div className="flex justify-between mt-2 sm:mt-4">
                 {data.map((d, i) => (
-                    <span key={i} className="text-[10px] text-muted-foreground uppercase font-medium">
+                    <span key={i} className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-medium truncate max-w-[40px] sm:max-w-none text-center">
                         {d.date}
                     </span>
                 ))}
