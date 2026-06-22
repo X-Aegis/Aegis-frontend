@@ -19,6 +19,8 @@ import { DepositTab } from "../../components/DepositTab";
 import { ReferralLinkCard } from "../../components/ReferralLinkCard";
 import { ReferralStatsCard } from "../../components/ReferralStatsCard";
 import { Gift, HelpCircle } from "lucide-react";
+import { CurrencySwitch } from "../../components/CurrencySwitch";
+import { useCurrency } from "../../contexts/CurrencyContext";
 
 const MOCK_RISK_DATA = [
   { date: "Mar 01", risk: 24 },
@@ -34,6 +36,7 @@ export default function Home() {
   const t = useTranslations('HomePage');
   const [activeTab, setActiveTab] = useState("dashboard");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { formatAmount } = useCurrency();
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -95,6 +98,9 @@ export default function Home() {
             )
           )}
           <div className="border-t border-border mt-2 pt-4 flex flex-col gap-2">
+            <div className="flex justify-center pb-1">
+              <CurrencySwitch />
+            </div>
             <button
               onClick={() => setActiveTab("deposit")}
               className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === "deposit" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
@@ -138,13 +144,14 @@ export default function Home() {
             <Link href="/settings" className="hover:text-foreground transition-colors">{t('settings')}</Link>
           </nav>
           <div className="flex items-center gap-2 sm:gap-4">
-            <button 
+            <CurrencySwitch />
+            <button
               onClick={() => setActiveTab("deposit")}
               className={`hidden sm:inline-flex px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${activeTab === "deposit" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
             >
               {t('deposit')}
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab("withdraw")}
               className={`hidden sm:inline-flex px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${activeTab === "withdraw" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
             >
@@ -185,7 +192,7 @@ export default function Home() {
                     </div>
                     <div>
                        <p className="text-[10px] text-muted-foreground uppercase font-bold">Total Portfolio</p>
-                       <p className="text-lg font-bold">$12,450.80</p>
+                       <p className="text-lg font-bold">{formatAmount(12_450.80)}</p>
                     </div>
                  </div>
               </div>
