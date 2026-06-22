@@ -43,15 +43,15 @@ export function VaultAPYChart({ vaultId }: VaultAPYChartProps) {
 
   if (loading) {
     return (
-      <div className="w-full h-72 sm:h-80 md:h-96 lg:h-[400px] flex items-center justify-center bg-card/50 rounded-xl border border-border animate-pulse">
+      <div className="w-full h-[400px] flex items-center justify-center bg-card/50 rounded-xl border border-border animate-pulse">
         <p className="text-muted-foreground">Loading historical data...</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-72 sm:h-80 md:h-96 lg:h-[400px] p-4 bg-card rounded-xl border border-border shadow-sm">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 md:mb-6 gap-3 md:gap-4">
+    <div className="w-full h-[400px] p-4 bg-card rounded-xl border border-border shadow-sm">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 md:gap-0">
         <div>
           <h3 className="text-lg font-semibold text-foreground">Vault Performance</h3>
           <p className="text-sm text-muted-foreground">Historical share price</p>
@@ -71,7 +71,7 @@ export function VaultAPYChart({ vaultId }: VaultAPYChartProps) {
             </button>
           ))}
         </div>
-        <div className="text-left md:text-right">
+        <div className="text-right">
           <span className="text-2xl font-bold text-primary">
             +{( ((data[data.length-1]?.price || 0) / (data[0]?.price || 1) - 1) * 100 ).toFixed(2)}%
           </span>

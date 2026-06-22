@@ -69,7 +69,7 @@ export function StrategyAllocationPie() {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center min-h-48 sm:min-h-56 md:min-h-[300px]">
+            <div className="flex items-center justify-center min-h-[300px]">
                 <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
             </div>
         );
@@ -87,7 +87,7 @@ export function StrategyAllocationPie() {
     };
 
     return (
-        <div className="w-full h-48 sm:h-56 md:h-[300px] mt-4">
+        <div className="w-full h-[300px] mt-4">
             <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                     <Pie

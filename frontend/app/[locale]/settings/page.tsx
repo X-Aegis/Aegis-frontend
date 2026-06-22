@@ -41,7 +41,7 @@ export default function SettingsPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1 max-w-4xl">
+      <main className="container mx-auto px-6 py-8 flex-1 max-w-4xl">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Sidebar */}
           <aside className="space-y-1">
@@ -102,7 +102,7 @@ export default function SettingsPage() {
                 </div>
 
                 {/* Currency Selector */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-2 gap-3 sm:gap-0">
+                <div className="flex items-center justify-between pt-2">
                   <div className="space-y-1">
                     <p className="font-semibold text-sm flex items-center gap-2">
                       <Coins className="w-4 h-4 text-muted-foreground" />
@@ -113,7 +113,7 @@ export default function SettingsPage() {
                   <select 
                     value={currency} 
                     onChange={(e) => setCurrency(e.target.value)}
-                    className="bg-accent/50 border border-border rounded-lg text-sm px-3 py-1.5 focus:ring-1 focus:ring-primary outline-none w-full sm:w-auto"
+                    className="bg-accent/50 border border-border rounded-lg text-sm px-3 py-1.5 focus:ring-1 focus:ring-primary outline-none"
                   >
                     <option value="USD">USD (Global)</option>
                     <option value="NGN">NGN (Nigeria)</option>

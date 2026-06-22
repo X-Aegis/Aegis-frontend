@@ -34,7 +34,7 @@ export function ReferralLinkCard() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex flex-col sm:flex-row gap-2">
+        <div className="flex gap-2">
           <div className="relative flex-1">
             <Input 
               value={referralLink} 

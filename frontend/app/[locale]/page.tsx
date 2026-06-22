@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { useState, useCallback, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,7 @@ import { VaultOverviewCard } from "../../components/VaultOverviewCard";
 import { VaultAPYChart } from "../../components/charts/VaultAPYChart";
 import { TransactionHistoryList } from "@/components/transactions/TransactionHistoryList";
 import Link from "next/link";
-import { TrendingUp, Shield, BarChart3, ArrowUpRight, Menu, X } from "lucide-react";
+import { TrendingUp, Shield, BarChart3, ArrowUpRight } from "lucide-react";
 import { RiskChart } from "../../components/RiskChart";
 import { RiskBadge } from "../../components/RiskBadge";
 import { WithdrawTab } from "../../components/WithdrawTab";
@@ -33,92 +33,17 @@ const MOCK_RISK_DATA = [
 export default function Home() {
   const t = useTranslations('HomePage');
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [activeTab]);
-
-  const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
 
   return (
     <main className="flex min-h-screen flex-col bg-background text-foreground">
-      {/* Mobile Menu Overlay */}
-      {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          onClick={closeMobileMenu}
-        />
-      )}
-
-      {/* Mobile Menu Drawer */}
-      <div
-        className={`fixed top-0 right-0 h-full w-64 bg-card border-l border-border z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
-          mobileMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          <span className="font-bold text-lg">Menu</span>
-          <button
-            onClick={closeMobileMenu}
-            className="p-2 hover:bg-muted rounded-lg transition-colors"
-            aria-label="Close menu"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-        <nav className="flex flex-col p-4 gap-1">
-          {[
-            { key: "dashboard", label: t('dashboard') },
-            { key: "referrals", label: t('referrals') },
-            { key: "vaults", label: t('vaults'), href: "#" },
-            { key: "swap", label: t('swap'), href: "#" },
-            { key: "settings", label: t('settings'), href: "/settings" },
-          ].map((item) =>
-            item.href ? (
-              <Link
-                key={item.key}
-                href={item.href}
-                onClick={closeMobileMenu}
-                className="w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-              >
-                {item.label}
-              </Link>
-            ) : (
-              <button
-                key={item.key}
-                onClick={() => { setActiveTab(item.key); }}
-                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === item.key ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent hover:text-foreground"}`}
-              >
-                {item.label}
-              </button>
-            )
-          )}
-          <div className="border-t border-border mt-2 pt-4 flex flex-col gap-2">
-            <button
-              onClick={() => setActiveTab("deposit")}
-              className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === "deposit" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
-            >
-              {t('deposit')}
-            </button>
-            <button
-              onClick={() => setActiveTab("withdraw")}
-              className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === "withdraw" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
-            >
-              {t('withdraw')}
-            </button>
-          </div>
-        </nav>
-      </div>
-
       {/* Navigation / Header */}
-      <header className="border-b border-border bg-card/30 backdrop-blur-md sticky top-0 z-30">
-        <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shrink-0">
+      <header className="border-b border-border bg-card/30 backdrop-blur-md sticky top-0 z-50">
+        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <Shield className="text-primary-foreground w-5 h-5" />
             </div>
-            <span className="text-lg sm:text-xl font-bold tracking-tight">X-Aegis</span>
+            <span className="text-xl font-bold tracking-tight">X-Aegis</span>
           </div>
           <nav className="hidden md:flex gap-8 text-sm font-medium text-muted-foreground">
             <button 
@@ -137,34 +62,27 @@ export default function Home() {
             <Link href="#" className="hover:text-foreground transition-colors">{t('swap')}</Link>
             <Link href="/settings" className="hover:text-foreground transition-colors">{t('settings')}</Link>
           </nav>
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-4">
             <button 
               onClick={() => setActiveTab("deposit")}
-              className={`hidden sm:inline-flex px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${activeTab === "deposit" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === "deposit" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
             >
               {t('deposit')}
             </button>
             <button 
               onClick={() => setActiveTab("withdraw")}
-              className={`hidden sm:inline-flex px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${activeTab === "withdraw" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === "withdraw" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
             >
               {t('withdraw')}
             </button>
-            <button className="bg-primary text-primary-foreground px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 whitespace-nowrap">
+            <button className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
               {t('connectWallet')}
-            </button>
-            <button
-              onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden p-2 hover:bg-muted rounded-lg transition-colors"
-              aria-label="Open menu"
-            >
-              <Menu className="w-5 h-5" />
             </button>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <div className="container mx-auto px-6 py-8">
         {activeTab === "dashboard" ? (
           <>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">

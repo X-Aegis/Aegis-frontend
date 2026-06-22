@@ -33,19 +33,19 @@ export default function VaultDetailsPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-10 flex-grow">
-         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-10">
+      <main className="container mx-auto px-6 py-10 flex-grow">
+         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
             {/* Left Column: Stats and Info */}
             <div className="lg:col-span-2 space-y-8">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 md:gap-4">
+               <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                   <div>
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tighter mb-2">{vaultName}</h1>
+                    <h1 className="text-4xl font-black tracking-tighter mb-2">{vaultName}</h1>
                     <div className="flex items-center gap-3">
                        <span className="bg-primary/10 text-primary text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded">Delta Neutral</span>
                        <span className="bg-green-500/10 text-green-500 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded">Audited</span>
                     </div>
                   </div>
-                  <div className="flex items-end gap-6 sm:gap-10">
+                  <div className="flex items-end gap-10">
                      <div className="text-right">
                         <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mb-1">Current Yield</p>
                         <p className="text-4xl font-black text-green-500">{apy}</p>
