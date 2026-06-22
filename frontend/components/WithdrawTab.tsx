@@ -14,6 +14,7 @@ import {
     requestAccess,
     signTransaction,
 } from "@stellar/freighter-api";
+import { SigningOverlay, type SigningStatus } from "./SigningOverlay";
 
 const CONTRACT_ID = "CCWHG2Q4VFY6XCQB4S4A4R6XYLFXSFTNQQYJAY4GZRXF2WYYX3F5YRP";
 const RPC_URL = "https://soroban-testnet.stellar.org";
@@ -24,6 +25,10 @@ export function WithdrawTab() {
     const [amount, setAmount] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [estimatedFee, setEstimatedFee] = useState<string>("Loading...");
+    const [overlayOpen, setOverlayOpen] = useState<boolean>(false);
+    const [overlayStatus, setOverlayStatus] = useState<SigningStatus>("building");
+    const [overlayTxHash, setOverlayTxHash] = useState<string | null>(null);
+    const [overlayError, setOverlayError] = useState<string | null>(null);
 
     const mockUserBalance = 1000.0;
 
@@ -87,15 +92,17 @@ export function WithdrawTab() {
         }
 
         setIsLoading(true);
-        const toastId = toast.loading("Initiating withdrawal...");
+        setOverlayOpen(true);
+        setOverlayStatus("building");
+        setOverlayTxHash(null);
+        setOverlayError(null);
 
         try {
             const server = new SorobanRpc.Server(RPC_URL);
 
-            toast.loading("Fetching account details...", { id: toastId });
             const account = await server.getAccount(address);
 
-            toast.loading("Building transaction...", { id: toastId });
+            setOverlayStatus("building");
             const contract = new Contract(CONTRACT_ID);
 
             const tx = new TransactionBuilder(account, {
@@ -115,99 +122,112 @@ export function WithdrawTab() {
                 .setTimeout(TimeoutInfinite)
                 .build();
 
-            toast.loading("Simulating transaction...", { id: toastId });
+            setOverlayStatus("simulating");
             const sim = await server.simulateTransaction(tx);
             if (!SorobanRpc.Api.isSimulationSuccess(sim)) {
-                toast.error("Simulation failed. Check console for details.", { id: toastId });
+                setOverlayStatus("error");
+                setOverlayError("Simulation failed. Check console for details.");
                 console.error("Simulation failed:", sim);
                 return;
             }
 
-            toast.loading("Assembling transaction...", { id: toastId });
             const preparedTxBuilder = SorobanRpc.assembleTransaction(tx, sim);
 
-            toast.loading("Please sign the transaction in Freighter...", { id: toastId });
+            setOverlayStatus("signing");
             const signedXdr = await signTransaction(preparedTxBuilder.build().toXDR(), {
                 networkPassphrase: NETWORK_PASSPHRASE,
             });
 
-            toast.loading("Submitting to network...", { id: toastId });
+            setOverlayStatus("submitting");
             const txToSubmit = TransactionBuilder.fromXDR(signedXdr, NETWORK_PASSPHRASE);
             const result = await server.sendTransaction(txToSubmit);
 
             if (result.status !== "PENDING") {
-                toast.error("Transaction submission failed.", { id: toastId });
+                setOverlayStatus("error");
+                setOverlayError("Transaction submission failed.");
                 console.error("Submission failed:", result);
                 return;
             }
 
-            toast.success(`Withdrawal successful! Hash: ${result.hash}`, { id: toastId });
+            setOverlayTxHash(result.hash);
+            setOverlayStatus("success");
+            toast.success(`Withdrawal successful! Hash: ${result.hash}`);
             setAmount("");
         } catch (error: unknown) {
             console.error(error);
-            toast.error("Error: " + (error instanceof Error ? error.message : String(error)), { id: toastId });
+            setOverlayStatus("error");
+            setOverlayError(error instanceof Error ? error.message : String(error));
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="w-full max-w-md mx-auto my-8 p-6 bg-card border rounded-lg shadow-sm">
-            <h2 className="text-2xl font-semibold mb-4 text-card-foreground">
-                Withdraw Funds
-            </h2>
+        <>
+            <SigningOverlay
+                isOpen={overlayOpen}
+                status={overlayStatus}
+                txHash={overlayTxHash}
+                error={overlayError}
+                onClose={() => setOverlayOpen(false)}
+            />
+            <div className="w-full max-w-md mx-auto my-8 p-6 bg-card border rounded-lg shadow-sm">
+                <h2 className="text-2xl font-semibold mb-4 text-card-foreground">
+                    Withdraw Funds
+                </h2>
 
-            {!address && (
-                <button
-                    onClick={handleConnect}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors mb-4"
-                >
-                    Connect Freighter Wallet
-                </button>
-            )}
+                {!address && (
+                    <button
+                        onClick={handleConnect}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors mb-4"
+                    >
+                        Connect Freighter Wallet
+                    </button>
+                )}
 
-            {address && (
-                <p className="text-sm text-muted-foreground mb-6 break-all">
-                    Connected: {address}
-                </p>
-            )}
+                {address && (
+                    <p className="text-sm text-muted-foreground mb-6 break-all">
+                        Connected: {address}
+                    </p>
+                )}
 
-            <form onSubmit={handleWithdraw} className="space-y-4">
-                <div>
-                    <label htmlFor="amount" className="block text-sm font-medium mb-1">
-                        Amount (USDC)
-                    </label>
-                    <input
-                        id="amount"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        disabled={isLoading || !address}
-                        className="w-full border rounded p-2 bg-transparent focus:ring-2 focus:ring-blue-500 outline-none"
-                        placeholder="0.00"
-                        required
-                    />
-                    <div className="flex justify-between mt-1 text-xs text-muted-foreground">
-                        <span>Available Balance:</span>
-                        <span>{mockUserBalance} USDC</span>
+                <form onSubmit={handleWithdraw} className="space-y-4">
+                    <div>
+                        <label htmlFor="amount" className="block text-sm font-medium mb-1">
+                            Amount (USDC)
+                        </label>
+                        <input
+                            id="amount"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                            disabled={isLoading || !address}
+                            className="w-full border rounded p-2 bg-transparent focus:ring-2 focus:ring-blue-500 outline-none"
+                            placeholder="0.00"
+                            required
+                        />
+                        <div className="flex justify-between mt-1 text-xs text-muted-foreground">
+                            <span>Available Balance:</span>
+                            <span>{mockUserBalance} USDC</span>
+                        </div>
                     </div>
-                </div>
 
-                <div className="flex justify-between items-center text-sm text-muted-foreground bg-secondary/20 p-2 rounded">
-                    <span>Estimated Network Fee:</span>
-                    <span>{estimatedFee}</span>
-                </div>
+                    <div className="flex justify-between items-center text-sm text-muted-foreground bg-secondary/20 p-2 rounded">
+                        <span>Estimated Network Fee:</span>
+                        <span>{estimatedFee}</span>
+                    </div>
 
-                <button
-                    type="submit"
-                    disabled={isLoading || !amount || !address}
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-600/50 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded transition-colors"
-                >
-                    {isLoading ? "Processing..." : "Withdraw"}
-                </button>
-            </form>
-        </div>
+                    <button
+                        type="submit"
+                        disabled={isLoading || !amount || !address}
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-600/50 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded transition-colors"
+                    >
+                        {isLoading ? "Processing..." : "Withdraw"}
+                    </button>
+                </form>
+            </div>
+        </>
     );
 }

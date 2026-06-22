@@ -10,5 +10,19 @@
     "deposit": "Deposit",
     "withdraw": "Withdraw",
     "connectWallet": "Connect Wallet"
+  },
+  "SigningOverlay": {
+    "signingTitle": "Signing Transaction",
+    "buildingTransaction": "Building transaction",
+    "simulatingTransaction": "Simulating transaction",
+    "signingTransaction": "Waiting for signature",
+    "submittingTransaction": "Submitting to network",
+    "confirmingTransaction": "Confirming transaction",
+    "transactionSuccessful": "Transaction Successful",
+    "transactionFailed": "Transaction Failed",
+    "transactionHash": "Your transaction has been submitted to the network.",
+    "waitingForWallet": "Please check your wallet to approve the transaction",
+    "viewOnExplorer": "View on Explorer",
+    "close": "Close"
   }
 }
