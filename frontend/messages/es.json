@@ -10,5 +10,19 @@
     "deposit": "Depositar",
     "withdraw": "Retirar",
     "connectWallet": "Conectar Billetera"
+  },
+  "SigningOverlay": {
+    "signingTitle": "Firmando Transacción",
+    "buildingTransaction": "Construyendo transacción",
+    "simulatingTransaction": "Simulando transacción",
+    "signingTransaction": "Esperando firma",
+    "submittingTransaction": "Enviando a la red",
+    "confirmingTransaction": "Confirmando transacción",
+    "transactionSuccessful": "Transacción Exitosa",
+    "transactionFailed": "Transacción Fallida",
+    "transactionHash": "Su transacción ha sido enviada a la red.",
+    "waitingForWallet": "Verifique su billetera para aprobar la transacción",
+    "viewOnExplorer": "Ver en Explorer",
+    "close": "Cerrar"
   }
 }
