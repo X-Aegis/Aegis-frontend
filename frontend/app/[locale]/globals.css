@@ -56,6 +56,6 @@
   }
 
   body {
-    @apply bg-background text-foreground shrink-0 transition-colors duration-500 ease-in-out;
+    @apply bg-background text-foreground shrink-0 transition-colors duration-500 ease-in-out overflow-x-hidden;
   }
 }
