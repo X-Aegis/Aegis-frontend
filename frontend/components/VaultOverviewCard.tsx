@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { getProvider, activeNetwork } from "../lib/network";
 import { Contract, TransactionBuilder, Account, xdr } from "@stellar/stellar-sdk";
 import { isConnected, requestAccess } from "@stellar/freighter-api";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 // The contract ID should ideally come from an .env file or config
 const VAULT_CONTRACT_ID = "CCWHG2Q4VFY6XCQB4S4A4R6XYLFXSFTNQQYJAY4GZRXF2WYYX3F5YRP";
 
 export function VaultOverviewCard() {
+    const { formatAmount } = useCurrency();
     const [totalAssets, setTotalAssets] = useState<number | null>(null);
     const [totalShares, setTotalShares] = useState<number | null>(null);
     const [userBalance, setUserBalance] = useState<number | null>(null);
@@ -77,10 +79,10 @@ export function VaultOverviewCard() {
         }
     };
 
-    // Calculate share price (Total Assets / Total Shares)
-    const sharePrice = totalAssets && totalShares && totalShares > 0
-        ? (totalAssets / totalShares).toFixed(4)
-        : "1.0000";
+    // Calculate share price (Total Assets / Total Shares) in USD
+    const sharePriceUsd = totalAssets && totalShares && totalShares > 0
+        ? totalAssets / totalShares
+        : 1.0;
 
     return (
         <div className="w-full max-w-lg p-6 mx-auto bg-card border rounded-xl shadow-sm">
@@ -105,14 +107,14 @@ export function VaultOverviewCard() {
                         <div className="p-4 bg-muted/50 rounded-lg border border-border/50">
                             <p className="text-sm text-muted-foreground font-medium mb-1">Total Assets (TVL)</p>
                             <p className="text-2xl font-bold tracking-tight">
-                                {totalAssets ? `$${totalAssets.toLocaleString()}` : "--"}
+                                {totalAssets ? formatAmount(totalAssets) : "--"}
                             </p>
                         </div>
 
                         <div className="p-4 bg-muted/50 rounded-lg border border-border/50">
                             <p className="text-sm text-muted-foreground font-medium mb-1">Share Price</p>
                             <p className="text-2xl font-bold tracking-tight text-emerald-600">
-                                ${sharePrice}
+                                {formatAmount(sharePriceUsd)}
                             </p>
                         </div>
                     </div>

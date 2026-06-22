@@ -7,12 +7,18 @@ import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { CurrencySwitch } from "@/components/CurrencySwitch";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 export default function VaultDetailsPage() {
   const { id } = useParams();
-  
+  const { formatAmount } = useCurrency();
+
   const vaultName = id === "1" ? "USDC Savings Vault" : "Growth Index Vault";
   const apy = id === "1" ? "12.4%" : "24.8%";
+  // TVL and monthly yield stored in USD; converted by formatAmount
+  const tvlUsd = 4_200_000;
+  const monthlyYieldUsd = 2.40;
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -29,7 +35,10 @@ export default function VaultDetailsPage() {
               <span className="text-lg font-bold tracking-tight">Vault Explorer</span>
             </div>
           </div>
-          <Button variant="outline">Connect Wallet</Button>
+          <div className="flex items-center gap-3">
+            <CurrencySwitch />
+            <Button variant="outline">Connect Wallet</Button>
+          </div>
         </div>
       </header>
 
@@ -52,7 +61,7 @@ export default function VaultDetailsPage() {
                      </div>
                      <div className="text-right">
                         <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mb-1">TVL</p>
-                        <p className="text-3xl font-black ">$4.2M</p>
+                        <p className="text-3xl font-black">{formatAmount(tvlUsd)}</p>
                      </div>
                   </div>
                </div>
@@ -114,7 +123,7 @@ export default function VaultDetailsPage() {
                   <CardFooter className="flex-col items-stretch space-y-3 mt-4 border-t pt-6">
                      <div className="flex justify-between text-sm font-bold">
                         <span className="text-muted-foreground">Expected Monthly Yield</span>
-                        <span className="text-green-500">+$2.40</span>
+                        <span className="text-green-500">+{formatAmount(monthlyYieldUsd)}</span>
                      </div>
                      <div className="flex justify-between text-sm font-bold">
                         <span className="text-muted-foreground">Protocol Fee</span>
