@@ -44,21 +44,21 @@ export function TransactionHistoryRow({ tx }: TransactionHistoryRowProps) {
   const sign = isDeposit ? "+" : "−";
 
   return (
-    <div className="flex items-center gap-3 py-2.5 border-b border-border last:border-0">
+    <div className="flex items-center gap-2 sm:gap-3 py-2.5 border-b border-border last:border-0">
       <div
-        className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${iconBg}`}
+        className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center shrink-0 ${iconBg}`}
       >
-        <Icon className={`w-4 h-4 ${iconColor}`} />
+        <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${iconColor}`} />
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold leading-tight">{kindLabel}</p>
-        <p className="text-[11px] text-muted-foreground truncate">
+        <p className="text-xs sm:text-sm font-semibold leading-tight">{kindLabel}</p>
+        <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate">
           {shortenHash(tx.txHash)} &middot; {formatTimestamp(tx.timestampISO)}
         </p>
       </div>
 
-      <p className={`text-sm font-bold tabular-nums whitespace-nowrap ${amountColor}`}>
+      <p className={`text-xs sm:text-sm font-bold tabular-nums whitespace-nowrap shrink-0 ${amountColor}`}>
         {sign}{formatAmount(tx.amount)} {tx.asset}
       </p>
     </div>

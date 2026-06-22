@@ -47,17 +47,17 @@ export function ReferralStatsCard() {
         <CardContent>
           <div className="space-y-4">
             {MOCK_REFERRALS.map((ref) => (
-              <div key={ref.id} className="flex justify-between items-center pb-4 border-b border-border last:border-0 last:pb-0">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+              <div key={ref.id} className="flex justify-between items-center gap-2 pb-4 border-b border-border last:border-0 last:pb-0">
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                  <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center shrink-0">
                     <Wallet className="w-4 h-4 text-muted-foreground" />
                   </div>
-                  <div>
-                    <p className="text-sm font-bold font-mono">{ref.user}</p>
+                  <div className="min-w-0">
+                    <p className="text-xs sm:text-sm font-bold font-mono truncate">{ref.user}</p>
                     <p className="text-[10px] text-muted-foreground uppercase">{ref.date}</p>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="text-right shrink-0">
                   <p className="text-sm font-bold">{ref.bonus}</p>
                   <p className={`text-[10px] uppercase font-bold ${ref.status === 'Active' ? 'text-green-500' : 'text-yellow-500'}`}>
                     {ref.status}
