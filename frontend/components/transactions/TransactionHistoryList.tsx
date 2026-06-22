@@ -47,7 +47,7 @@ export function TransactionHistoryList() {
 
   return (
     <div className="bg-card border border-border p-6 rounded-2xl">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
         <h3 className="font-bold flex items-center gap-2">
           <ArrowDownUp className="w-4 h-4 text-primary" />
           Recent Transactions
@@ -56,11 +56,11 @@ export function TransactionHistoryList() {
           <div className="flex items-center gap-4">
             <button
               onClick={handleExportCSV}
-              className="text-sm px-3 py-1 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 flex items-center gap-2 transition-colors"
+              className="text-xs sm:text-sm px-3 py-1 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 flex items-center gap-2 transition-colors"
               aria-label="Download CSV"
             >
-              <Download className="w-4 h-4" />
-              Download CSV
+              <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              CSV
             </button>
             <button
               onClick={refresh}
