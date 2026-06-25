@@ -172,32 +172,35 @@ export function DepositTab() {
                 onClose={() => setOverlayOpen(false)}
             />
             <div className="w-full max-w-md mx-auto my-8 p-6 bg-card border rounded-lg shadow-sm">
-                <h2 className="text-2xl font-semibold mb-4 text-card-foreground">
+                <h2 id="deposit-form-title" className="text-2xl font-semibold mb-4 text-card-foreground">
                     Deposit Funds
                 </h2>
 
                 {!address && (
                     <button
+                        type="button"
                         onClick={handleConnect}
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors mb-4"
+                        aria-label="Connect Freighter wallet"
                     >
                         Connect Freighter Wallet
                     </button>
                 )}
 
                 {address && (
-                    <p className="text-sm text-muted-foreground mb-6 break-all">
+                    <p className="text-sm text-muted-foreground mb-6 break-all" id="deposit-wallet-status">
                         Connected: {address}
                     </p>
                 )}
 
-                <form onSubmit={handleDeposit} className="space-y-4">
+                <form onSubmit={handleDeposit} className="space-y-4" aria-labelledby="deposit-form-title">
                     <div>
-                        <label htmlFor="amount" className="block text-sm font-medium mb-1">
+                        <label htmlFor="deposit-amount" className="block text-sm font-medium mb-1">
                             Amount (USDC)
                         </label>
                         <input
-                            id="amount"
+                            id="deposit-amount"
+                            name="deposit-amount"
                             type="number"
                             step="0.01"
                             min="0"
@@ -207,14 +210,22 @@ export function DepositTab() {
                             className="w-full border rounded p-2 bg-transparent focus:ring-2 focus:ring-blue-500 outline-none"
                             placeholder="0.00"
                             required
+                            aria-label="Deposit amount in USDC"
+                            aria-describedby="deposit-amount-balance deposit-network-fee"
                         />
-                        <div className="flex justify-between mt-1 text-xs text-muted-foreground">
+                        <div
+                            id="deposit-amount-balance"
+                            className="flex justify-between mt-1 text-xs text-muted-foreground"
+                        >
                             <span>Available Balance:</span>
                             <span>{mockUserBalance} USDC</span>
                         </div>
                     </div>
 
-                    <div className="flex justify-between items-center text-sm text-muted-foreground bg-secondary/20 p-2 rounded">
+                    <div
+                        id="deposit-network-fee"
+                        className="flex justify-between items-center text-sm text-muted-foreground bg-secondary/20 p-2 rounded"
+                    >
                         <span>Estimated Network Fee:</span>
                         <span>{estimatedFee}</span>
                     </div>

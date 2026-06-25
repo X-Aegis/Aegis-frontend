@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl';
 import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { AiInsightStream } from "../../components/AiInsightStream";
 import { VaultOverviewCard } from "../../components/VaultOverviewCard";
 import { VaultAPYChart } from "../../components/charts/VaultAPYChart";
@@ -51,11 +50,16 @@ export default function Home() {
         <div
           className="fixed inset-0 bg-black/50 z-40 md:hidden"
           onClick={closeMobileMenu}
+          aria-hidden="true"
         />
       )}
 
       {/* Mobile Menu Drawer */}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mobile navigation menu"
+        aria-hidden={!mobileMenuOpen}
         className={`fixed top-0 right-0 h-full w-64 bg-card border-l border-border z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
           mobileMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
@@ -70,7 +74,7 @@ export default function Home() {
             <X className="w-5 h-5" />
           </button>
         </div>
-        <nav className="flex flex-col p-4 gap-1">
+        <nav className="flex flex-col p-4 gap-1" aria-label="Mobile navigation">
           {[
             { key: "dashboard", label: t('dashboard') },
             { key: "referrals", label: t('referrals') },
@@ -90,7 +94,9 @@ export default function Home() {
             ) : (
               <button
                 key={item.key}
+                type="button"
                 onClick={() => { setActiveTab(item.key); }}
+                aria-current={activeTab === item.key ? "page" : undefined}
                 className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === item.key ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent hover:text-foreground"}`}
               >
                 {item.label}
@@ -102,13 +108,17 @@ export default function Home() {
               <CurrencySwitch />
             </div>
             <button
+              type="button"
               onClick={() => setActiveTab("deposit")}
+              aria-current={activeTab === "deposit" ? "page" : undefined}
               className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === "deposit" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
             >
               {t('deposit')}
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("withdraw")}
+              aria-current={activeTab === "withdraw" ? "page" : undefined}
               className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === "withdraw" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
             >
               {t('withdraw')}
@@ -126,15 +136,19 @@ export default function Home() {
             </div>
             <span className="text-lg sm:text-xl font-bold tracking-tight">X-Aegis</span>
           </div>
-          <nav className="hidden md:flex gap-8 text-sm font-medium text-muted-foreground">
-            <button 
+          <nav className="hidden md:flex gap-8 text-sm font-medium text-muted-foreground" aria-label="Main navigation">
+            <button
+              type="button"
               onClick={() => setActiveTab("dashboard")}
+              aria-current={activeTab === "dashboard" ? "page" : undefined}
               className={`${activeTab === "dashboard" ? "text-foreground" : "hover:text-foreground"} transition-colors`}
             >
               {t('dashboard')}
             </button>
-            <button 
+            <button
+              type="button"
               onClick={() => setActiveTab("referrals")}
+              aria-current={activeTab === "referrals" ? "page" : undefined}
               className={`${activeTab === "referrals" ? "text-foreground" : "hover:text-foreground"} transition-colors`}
              >
               {t('referrals')}
@@ -146,21 +160,26 @@ export default function Home() {
           <div className="flex items-center gap-2 sm:gap-4">
             <CurrencySwitch />
             <button
+              type="button"
               onClick={() => setActiveTab("deposit")}
+              aria-current={activeTab === "deposit" ? "page" : undefined}
               className={`hidden sm:inline-flex px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${activeTab === "deposit" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
             >
               {t('deposit')}
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab("withdraw")}
+              aria-current={activeTab === "withdraw" ? "page" : undefined}
               className={`hidden sm:inline-flex px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${activeTab === "withdraw" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
             >
               {t('withdraw')}
             </button>
-            <button className="bg-primary text-primary-foreground px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 whitespace-nowrap">
+            <button type="button" className="bg-primary text-primary-foreground px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 whitespace-nowrap">
               {t('connectWallet')}
             </button>
             <button
+              type="button"
               onClick={() => setMobileMenuOpen(true)}
               className="md:hidden p-2 hover:bg-muted rounded-lg transition-colors"
               aria-label="Open menu"

@@ -94,10 +94,15 @@ export function SigningOverlay({
   const isError = status === "error";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in duration-200"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="signing-overlay-title"
+    >
       <div className="w-full max-w-md mx-4 bg-card border border-border rounded-2xl shadow-2xl p-6">
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10" aria-hidden="true">
             {isSuccess ? (
               <CheckCircle2 className="h-5 w-5 text-emerald-500" />
             ) : isError ? (
@@ -107,7 +112,7 @@ export function SigningOverlay({
             )}
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-foreground">
+            <h3 id="signing-overlay-title" className="text-lg font-semibold text-foreground">
               {isSuccess
                 ? t("transactionSuccessful")
                 : isError
@@ -136,6 +141,7 @@ export function SigningOverlay({
             )}
             {onClose && (
               <button
+                type="button"
                 onClick={onClose}
                 className={cn(
                   "w-full py-2 px-4 rounded-lg font-medium text-sm transition-colors",

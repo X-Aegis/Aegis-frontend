@@ -25,7 +25,7 @@ export default function VaultDetailsPage() {
        <header className="border-b border-border bg-card/30 backdrop-blur-md sticky top-0 z-50">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/" className="p-2 hover:bg-muted rounded-lg transition-colors">
+            <Link href="/" className="p-2 hover:bg-muted rounded-lg transition-colors" aria-label="Back to dashboard">
               <ChevronLeft className="w-5 h-5" />
             </Link>
             <div className="flex items-center gap-2">
@@ -102,11 +102,22 @@ export default function VaultDetailsPage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                      <div className="space-y-2">
-                        <label className="text-xs font-bold text-muted-foreground uppercase">Amount (USDC)</label>
-                        <Input type="number" placeholder="0.00" className="h-14 text-2xl font-bold rounded-2xl" />
-                        <div className="flex justify-between text-[11px] font-bold px-2">
+                        <label htmlFor="vault-deposit-amount" className="text-xs font-bold text-muted-foreground uppercase">
+                          Amount (USDC)
+                        </label>
+                        <Input
+                          id="vault-deposit-amount"
+                          type="number"
+                          placeholder="0.00"
+                          className="h-14 text-2xl font-bold rounded-2xl"
+                          aria-label="Vault deposit amount in USDC"
+                          aria-describedby="vault-deposit-balance"
+                        />
+                        <div id="vault-deposit-balance" className="flex justify-between text-[11px] font-bold px-2">
                            <span className="text-muted-foreground">Balance: 245.20 USDC</span>
-                           <button className="text-primary hover:underline">MAX</button>
+                           <button type="button" className="text-primary hover:underline" aria-label="Use maximum available balance">
+                            MAX
+                           </button>
                         </div>
                      </div>
                      
@@ -134,10 +145,10 @@ export default function VaultDetailsPage() {
 
                <div className="bg-gradient-to-br from-indigo-600 to-blue-700 text-white p-8 rounded-3xl shadow-xl relative overflow-hidden group">
                   <div className="relative z-10">
-                     <h4 className="text-lg font-black mb-2 flex items-center gap-2 italic">
+                     <h2 className="text-lg font-black mb-2 flex items-center gap-2 italic">
                         <TrendingUp className="w-5 h-5" />
                         AI Prediction
-                     </h4>
+                     </h2>
                      <p className="text-white/80 text-sm mb-4">
                         Our model predicts a <span className="text-white font-black underline">15% surge</span> in inflation for this sector over the next 3 weeks. Recommendation: <span className="text-white font-black">Increase Allocation</span>.
                      </p>
