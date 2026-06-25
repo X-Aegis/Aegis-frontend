@@ -38,6 +38,9 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { formatAmount } = useCurrency();
 
+  const focusVisibleClass =
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [activeTab]);
@@ -49,13 +52,16 @@ export default function Home() {
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/50 z-40 md:hidden" aria-hidden="true"
           onClick={closeMobileMenu}
         />
       )}
 
       {/* Mobile Menu Drawer */}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mobile navigation menu"
         className={`fixed top-0 right-0 h-full w-64 bg-card border-l border-border z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
           mobileMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
@@ -63,8 +69,9 @@ export default function Home() {
         <div className="flex items-center justify-between p-4 border-b border-border">
           <span className="font-bold text-lg">Menu</span>
           <button
+            type="button"
             onClick={closeMobileMenu}
-            className="p-2 hover:bg-muted rounded-lg transition-colors"
+            className={`p-2 hover:bg-muted rounded-lg transition-colors ${focusVisibleClass}`}
             aria-label="Close menu"
           >
             <X className="w-5 h-5" />
@@ -83,15 +90,17 @@ export default function Home() {
                 key={item.key}
                 href={item.href}
                 onClick={closeMobileMenu}
-                className="w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors ${focusVisibleClass}`}
               >
                 {item.label}
               </Link>
             ) : (
               <button
                 key={item.key}
+                type="button"
+                aria-pressed={activeTab === item.key}
                 onClick={() => { setActiveTab(item.key); }}
-                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === item.key ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent hover:text-foreground"}`}
+                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-colors ${focusVisibleClass} ${activeTab === item.key ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent hover:text-foreground"}`}
               >
                 {item.label}
               </button>
@@ -102,14 +111,18 @@ export default function Home() {
               <CurrencySwitch />
             </div>
             <button
+              type="button"
+              aria-pressed={activeTab === "deposit"}
               onClick={() => setActiveTab("deposit")}
-              className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === "deposit" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
+              className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${focusVisibleClass} ${activeTab === "deposit" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
             >
               {t('deposit')}
             </button>
             <button
+              type="button"
+              aria-pressed={activeTab === "withdraw"}
               onClick={() => setActiveTab("withdraw")}
-              className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${activeTab === "withdraw" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
+              className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${focusVisibleClass} ${activeTab === "withdraw" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
             >
               {t('withdraw')}
             </button>
@@ -127,42 +140,51 @@ export default function Home() {
             <span className="text-lg sm:text-xl font-bold tracking-tight">X-Aegis</span>
           </div>
           <nav className="hidden md:flex gap-8 text-sm font-medium text-muted-foreground">
-            <button 
+            <button
+              type="button"
+              aria-pressed={activeTab === "dashboard"}
               onClick={() => setActiveTab("dashboard")}
-              className={`${activeTab === "dashboard" ? "text-foreground" : "hover:text-foreground"} transition-colors`}
+              className={`${activeTab === "dashboard" ? "text-foreground" : "hover:text-foreground"} transition-colors rounded-sm ${focusVisibleClass}`}
             >
               {t('dashboard')}
             </button>
-            <button 
+            <button
+              type="button"
+              aria-pressed={activeTab === "referrals"}
               onClick={() => setActiveTab("referrals")}
-              className={`${activeTab === "referrals" ? "text-foreground" : "hover:text-foreground"} transition-colors`}
+              className={`${activeTab === "referrals" ? "text-foreground" : "hover:text-foreground"} transition-colors rounded-sm ${focusVisibleClass}`}
              >
               {t('referrals')}
             </button>
-            <Link href="#" className="hover:text-foreground transition-colors">{t('vaults')}</Link>
-            <Link href="#" className="hover:text-foreground transition-colors">{t('swap')}</Link>
-            <Link href="/settings" className="hover:text-foreground transition-colors">{t('settings')}</Link>
+            <button type="button" className={`hover:text-foreground transition-colors rounded-sm ${focusVisibleClass}`}>{t('vaults')}</button>
+            <button type="button" className={`hover:text-foreground transition-colors rounded-sm ${focusVisibleClass}`}>{t('swap')}</button>
+            <Link href="/settings" className={`hover:text-foreground transition-colors rounded-sm ${focusVisibleClass}`}>{t('settings')}</Link>
           </nav>
           <div className="flex items-center gap-2 sm:gap-4">
             <CurrencySwitch />
             <button
+              type="button"
+              aria-pressed={activeTab === "deposit"}
               onClick={() => setActiveTab("deposit")}
-              className={`hidden sm:inline-flex px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${activeTab === "deposit" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
+              className={`hidden sm:inline-flex px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${focusVisibleClass} ${activeTab === "deposit" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
             >
               {t('deposit')}
             </button>
             <button
+              type="button"
+              aria-pressed={activeTab === "withdraw"}
               onClick={() => setActiveTab("withdraw")}
-              className={`hidden sm:inline-flex px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${activeTab === "withdraw" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
+              className={`hidden sm:inline-flex px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all ${focusVisibleClass} ${activeTab === "withdraw" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
             >
               {t('withdraw')}
             </button>
-            <button className="bg-primary text-primary-foreground px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 whitespace-nowrap">
+            <button type="button" className={`bg-primary text-primary-foreground px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 whitespace-nowrap ${focusVisibleClass}`}>
               {t('connectWallet')}
             </button>
             <button
+              type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden p-2 hover:bg-muted rounded-lg transition-colors"
+              className={`md:hidden p-2 hover:bg-muted rounded-lg transition-colors ${focusVisibleClass}`}
               aria-label="Open menu"
             >
               <Menu className="w-5 h-5" />
@@ -230,7 +252,7 @@ export default function Home() {
                             <p className="text-[10px] text-muted-foreground uppercase font-bold">Current APY</p>
                             <p className="text-2xl font-bold text-green-500">12.4%</p>
                          </div>
-                         <Link href="/vaults/1" className="text-primary text-sm font-bold flex items-center gap-1">
+                         <Link href="/vaults/1" className={`text-primary text-sm font-bold flex items-center gap-1 rounded-sm ${focusVisibleClass}`}>
                             View Details
                          </Link>
                       </div>
@@ -250,7 +272,7 @@ export default function Home() {
                             <p className="text-[10px] text-muted-foreground uppercase font-bold">Current APY</p>
                             <p className="text-2xl font-bold text-green-500">24.8%</p>
                          </div>
-                         <Link href="/vaults/2" className="text-primary text-sm font-bold flex items-center gap-1">
+                         <Link href="/vaults/2" className={`text-primary text-sm font-bold flex items-center gap-1 rounded-sm ${focusVisibleClass}`}>
                             View Details
                          </Link>
                       </div>
@@ -265,7 +287,7 @@ export default function Home() {
                    <div className="relative z-10">
                       <h2 className="text-2xl font-bold mb-2">Aegis Guard</h2>
                       <p className="text-primary-foreground/80 text-sm mb-6">Your capital is shielded against 98.4% of forecasted volatility.</p>
-                      <button className="w-full bg-background/20 backdrop-blur-md border border-white/20 py-3 rounded-xl font-bold hover:bg-background/30 transition-all uppercase tracking-widest text-xs">
+                      <button type="button" className={`w-full bg-background/20 backdrop-blur-md border border-white/20 py-3 rounded-xl font-bold hover:bg-background/30 transition-all uppercase tracking-widest text-xs ${focusVisibleClass}`}>
                         Configure Shield
                       </button>
                    </div>
@@ -345,3 +367,6 @@ export default function Home() {
     </main>
   );
 }
+
+
+
