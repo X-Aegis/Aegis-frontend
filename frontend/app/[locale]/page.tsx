@@ -19,6 +19,7 @@ import { ReferralLinkCard } from "../../components/ReferralLinkCard";
 import { ReferralStatsCard } from "../../components/ReferralStatsCard";
 import { Gift, HelpCircle } from "lucide-react";
 import { CurrencySwitch } from "../../components/CurrencySwitch";
+import { NetworkSwitch } from "../../components/NetworkSwitch";
 import { useCurrency } from "../../contexts/CurrencyContext";
 
 const MOCK_RISK_DATA = [
@@ -111,6 +112,9 @@ export default function Home() {
             <div className="flex justify-center pb-1">
               <CurrencySwitch />
             </div>
+            <div className="flex justify-center pb-2">
+              <NetworkSwitch />
+            </div>
             <button
               type="button"
               aria-pressed={activeTab === "deposit"}
@@ -163,6 +167,9 @@ export default function Home() {
           </nav>
           <div className="flex items-center gap-2 sm:gap-4">
             <CurrencySwitch />
+            <div className="hidden sm:block">
+              <NetworkSwitch />
+            </div>
             <button
               type="button"
               aria-pressed={activeTab === "deposit"}
