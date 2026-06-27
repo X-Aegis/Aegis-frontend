@@ -2,14 +2,14 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { 
-  Bell, 
-  Shield, 
-  Moon, 
-  Sun, 
-  Monitor, 
-  ChevronRight, 
-  LogOut, 
+import {
+  Bell,
+  Shield,
+  Moon,
+  Sun,
+  Monitor,
+  ChevronRight,
+  LogOut,
   ArrowLeft,
   User,
   Globe,
@@ -22,13 +22,20 @@ export default function SettingsPage() {
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
   const [currency, setCurrency] = useState('USD');
 
+  const focusVisibleClass =
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background';
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Header */}
       <header className="border-b border-border bg-card/30 backdrop-blur-md sticky top-0 z-50">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/" className="p-2 hover:bg-accent rounded-full transition-colors" aria-label="Back to home">
+            <Link
+              href="/"
+              aria-label="Back to dashboard"
+              className={`p-2 hover:bg-accent rounded-full transition-colors ${focusVisibleClass}`}
+            >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <h1 className="text-xl font-bold">Account Settings</h1>
@@ -45,24 +52,40 @@ export default function SettingsPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Sidebar */}
           <aside className="space-y-1" aria-label="Settings sections">
-            <button className="w-full flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary rounded-xl font-medium text-sm transition-all border border-primary/20">
+            <button
+              type="button"
+              aria-current="page"
+              className={`w-full flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary rounded-xl font-medium text-sm transition-all border border-primary/20 ${focusVisibleClass}`}
+            >
               <User className="w-4 h-4" />
               General Profile
             </button>
-            <button className="w-full flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-accent rounded-xl font-medium text-sm transition-all">
+            <button
+              type="button"
+              className={`w-full flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-accent rounded-xl font-medium text-sm transition-all ${focusVisibleClass}`}
+            >
               <Shield className="w-4 h-4" />
               Security & Keys
             </button>
-            <button className="w-full flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-accent rounded-xl font-medium text-sm transition-all">
+            <button
+              type="button"
+              className={`w-full flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-accent rounded-xl font-medium text-sm transition-all ${focusVisibleClass}`}
+            >
               <Bell className="w-4 h-4" />
               Notifications
             </button>
-            <button className="w-full flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-accent rounded-xl font-medium text-sm transition-all">
+            <button
+              type="button"
+              className={`w-full flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-accent rounded-xl font-medium text-sm transition-all ${focusVisibleClass}`}
+            >
               <Globe className="w-4 h-4" />
               Regional Settings
             </button>
             <div className="pt-4 mt-4 border-t border-border">
-              <button className="w-full flex items-center gap-3 px-4 py-3 text-rose-500 hover:bg-rose-500/10 rounded-xl font-medium text-sm transition-all">
+              <button
+                type="button"
+                className={`w-full flex items-center gap-3 px-4 py-3 text-rose-500 hover:bg-rose-500/10 rounded-xl font-medium text-sm transition-all ${focusVisibleClass}`}
+              >
                 <LogOut className="w-4 h-4" />
                 Disconnect Wallet
               </button>
@@ -94,17 +117,17 @@ export default function SettingsPage() {
                       { id: 'light', icon: Sun, label: 'Light' },
                       { id: 'dark', icon: Moon, label: 'Dark' },
                       { id: 'system', icon: Monitor, label: 'System' }
-                    ].map((t) => (
+                    ].map((themeOption) => (
                       <button
-                        key={t.id}
+                        key={themeOption.id}
                         type="button"
                         role="radio"
-                        aria-checked={theme === t.id}
-                        onClick={() => setTheme(t.id as typeof theme)}
-                        className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${theme === t.id ? 'bg-primary/5 border-primary text-primary shadow-sm' : 'hover:bg-accent border-border text-muted-foreground'}`}
+                        aria-checked={theme === themeOption.id}
+                        onClick={() => setTheme(themeOption.id as 'light' | 'dark' | 'system')}
+                        className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${focusVisibleClass} ${theme === themeOption.id ? 'bg-primary/5 border-primary text-primary shadow-sm' : 'hover:bg-accent border-border text-muted-foreground'}`}
                       >
-                        <t.icon className="w-5 h-5" />
-                        <span className="text-xs font-medium">{t.label}</span>
+                        <themeOption.icon className="w-5 h-5" />
+                        <span className="text-xs font-medium">{themeOption.label}</span>
                       </button>
                     ))}
                   </div>
@@ -123,9 +146,10 @@ export default function SettingsPage() {
                   </div>
                   <select
                     id="secondary-currency"
+                    name="secondary-currency"
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
-                    className="bg-accent/50 border border-border rounded-lg text-sm px-3 py-1.5 focus:ring-1 focus:ring-primary outline-none w-full sm:w-auto"
+                    className={`bg-accent/50 border border-border rounded-lg text-sm px-3 py-1.5 outline-none w-full sm:w-auto ${focusVisibleClass}`}
                     aria-label="Secondary currency for portfolio estimates"
                     aria-describedby="secondary-currency-description"
                   >
@@ -150,27 +174,39 @@ export default function SettingsPage() {
                   role="switch"
                   aria-checked={notifications}
                   aria-label="Enable push notifications"
-                  className={`w-12 h-6 rounded-full p-1 cursor-pointer transition-colors duration-200 ease-in-out ${notifications ? 'bg-primary' : 'bg-muted'}`}
                   onClick={() => setNotifications(!notifications)}
+                  className={`w-12 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out ${focusVisibleClass} ${notifications ? 'bg-primary' : 'bg-muted'}`}
                 >
-                  <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-in-out ${notifications ? 'translate-x-6' : 'translate-x-0'}`} />
+                  <span className="sr-only">
+                    {notifications ? 'Disable push notifications' : 'Enable push notifications'}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className={`block w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-in-out ${notifications ? 'translate-x-6' : 'translate-x-0'}`}
+                  />
                 </button>
               </div>
               <div className="p-6 space-y-4">
-                <div className="flex justify-between items-center group cursor-pointer">
-                  <div>
-                    <p className="text-sm font-medium">Volatility Alerts</p>
-                    <p className="text-xs text-muted-foreground italic">Alerts when AI forecasts high risk.</p>
-                  </div>
+                <button
+                  type="button"
+                  className={`w-full flex justify-between items-center group text-left rounded-lg ${focusVisibleClass}`}
+                >
+                  <span>
+                    <span className="block text-sm font-medium">Volatility Alerts</span>
+                    <span className="block text-xs text-muted-foreground italic">Alerts when AI forecasts high risk.</span>
+                  </span>
                   <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                </div>
-                <div className="flex justify-between items-center group cursor-pointer pt-2 border-t border-border/50">
-                  <div>
-                    <p className="text-sm font-medium">Rebalance Success</p>
-                    <p className="text-xs text-muted-foreground italic">Confirmations of automated shield actions.</p>
-                  </div>
+                </button>
+                <button
+                  type="button"
+                  className={`w-full flex justify-between items-center group text-left pt-2 border-t border-border/50 rounded-lg ${focusVisibleClass}`}
+                >
+                  <span>
+                    <span className="block text-sm font-medium">Rebalance Success</span>
+                    <span className="block text-xs text-muted-foreground italic">Confirmations of automated shield actions.</span>
+                  </span>
                   <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                </div>
+                </button>
               </div>
             </section>
 
@@ -185,7 +221,14 @@ export default function SettingsPage() {
                   <p className="text-xs font-mono text-muted-foreground">GC...4X9S</p>
                 </div>
               </div>
-              <button className="text-xs font-bold text-primary hover:underline">View on Stellar.Expert</button>
+              <a
+                href="https://stellar.expert/explorer/testnet"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`text-xs font-bold text-primary hover:underline rounded-sm ${focusVisibleClass}`}
+              >
+                View on Stellar.Expert
+              </a>
             </section>
           </div>
         </div>
