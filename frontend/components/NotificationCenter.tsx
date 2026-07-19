@@ -1,8 +1,10 @@
 "use client";
 
+import { useCallback } from "react";
 import { Bell, ArrowDownLeft, ArrowUpRight, RefreshCw } from "lucide-react";
 import { useFreighter } from "@/contexts/FreighterContext";
 import { useOnChainNotifications, type NotificationEntry } from "@/hooks/useOnChainNotifications";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { formatRelativeTime } from "@/lib/utils";
 import type { TransactionKind } from "@/types/transactions";
@@ -40,8 +42,22 @@ function NotificationRow({ entry }: { entry: NotificationEntry }) {
 
 export function NotificationCenter() {
   const { address } = useFreighter();
+  const { showNotification } = usePushNotifications();
+
+  const onNewEntries = useCallback(
+    (entries: NotificationEntry[]) => {
+      // Cap it — if a bunch of events land in one poll, showing that many
+      // OS notifications at once is more spam than signal.
+      entries.slice(0, 3).forEach((entry) => {
+        void showNotification(entry.title, entry.message);
+      });
+    },
+    [showNotification]
+  );
+
   const { notifications, unreadCount, markAllRead } = useOnChainNotifications({
     account: address,
+    onNewEntries,
   });
 
   return (
