@@ -15,12 +15,15 @@ import {
     signTransaction,
 } from "@stellar/freighter-api";
 import { SigningOverlay, type SigningStatus } from "./SigningOverlay";
-
-const CONTRACT_ID = "CCWHG2Q4VFY6XCQB4S4A4R6XYLFXSFTNQQYJAY4GZRXF2WYYX3F5YRP";
-const RPC_URL = "https://soroban-testnet.stellar.org";
-const NETWORK_PASSPHRASE = "Test SDF Network ; September 2015";
+import { useContractAddress } from "@/hooks/useContractAddress";
+import { useNetwork } from "@/contexts/NetworkContext";
 
 export function WithdrawTab() {
+    const contractId = useContractAddress("vault");
+    const { networkConfig } = useNetwork();
+    const rpcUrl = networkConfig.rpcUrl;
+    const networkPassphrase = networkConfig.networkPassphrase;
+
     const [address, setAddress] = useState<string>("");
     const [amount, setAmount] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -46,7 +49,7 @@ export function WithdrawTab() {
         }
         async function fetchFee() {
             try {
-                const server = new SorobanRpc.Server(RPC_URL);
+                const server = new SorobanRpc.Server(rpcUrl);
                 const feeStats = await server.getFeeStats();
                 setEstimatedFee(`${feeStats.sorobanInclusionFee.min} stroops`);
             } catch {
@@ -98,16 +101,16 @@ export function WithdrawTab() {
         setOverlayError(null);
 
         try {
-            const server = new SorobanRpc.Server(RPC_URL);
+            const server = new SorobanRpc.Server(rpcUrl);
 
             const account = await server.getAccount(address);
 
             setOverlayStatus("building");
-            const contract = new Contract(CONTRACT_ID);
+            const contract = new Contract(contractId);
 
             const tx = new TransactionBuilder(account, {
                 fee: "1000",
-                networkPassphrase: NETWORK_PASSPHRASE,
+                networkPassphrase: networkPassphrase,
             })
                 .addOperation(
                     contract.call(
@@ -135,11 +138,11 @@ export function WithdrawTab() {
 
             setOverlayStatus("signing");
             const signedXdr = await signTransaction(preparedTxBuilder.build().toXDR(), {
-                networkPassphrase: NETWORK_PASSPHRASE,
+                networkPassphrase: networkPassphrase,
             });
 
             setOverlayStatus("submitting");
-            const txToSubmit = TransactionBuilder.fromXDR(signedXdr, NETWORK_PASSPHRASE);
+            const txToSubmit = TransactionBuilder.fromXDR(signedXdr, networkPassphrase);
             const result = await server.sendTransaction(txToSubmit);
 
             if (result.status !== "PENDING") {

@@ -14,13 +14,30 @@ import {
   User,
   Globe,
   Wallet,
-  Coins
+  Coins,
+  Code,
+  CheckCircle2,
+  XCircle,
+  Copy,
+  Info
 } from 'lucide-react';
+import { useNetwork } from '@/contexts/NetworkContext';
+import { resolveContract, getAllContractNames } from '@/lib/contracts.config';
 
 export default function SettingsPage() {
   const [notifications, setNotifications] = useState(true);
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
   const [currency, setCurrency] = useState('USD');
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const { network, networkConfig } = useNetwork();
+  const contractNames = getAllContractNames();
+
+  const handleCopy = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   const focusVisibleClass =
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background';
@@ -229,6 +246,65 @@ export default function SettingsPage() {
               >
                 View on Stellar.Expert
               </a>
+            </section>
+
+            {/* Contract & Debug Section */}
+            <section className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+              <div className="p-6 border-b border-border bg-accent/30">
+                <h2 className="font-bold flex items-center gap-2">
+                  <Code className="w-4 h-4 text-primary" />
+                  Contract & Debug
+                </h2>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Active network: <span className="font-bold uppercase">{networkConfig.network}</span>
+                </p>
+              </div>
+              <div className="p-6 space-y-4">
+                {contractNames.map((contractName) => {
+                  const resolved = resolveContract(network, contractName);
+                  return (
+                    <div key={contractName} className="p-4 bg-accent/20 rounded-xl border border-border/50 flex flex-col gap-2">
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold capitalize">{contractName} Contract</span>
+                          {resolved.isOverride && (
+                            <span className="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded font-medium flex items-center gap-1">
+                              <Info className="w-3 h-3" />
+                              ENV OVERRIDE
+                            </span>
+                          )}
+                        </div>
+                        {resolved.isValid ? (
+                          <span className="flex items-center gap-1 text-xs text-emerald-600 bg-emerald-500/10 px-2 py-1 rounded-md font-medium">
+                            <CheckCircle2 className="w-3 h-3" /> Valid
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-1 text-xs text-rose-600 bg-rose-500/10 px-2 py-1 rounded-md font-medium">
+                            <XCircle className="w-3 h-3" /> Invalid
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <code className="text-xs bg-background border border-border px-2 py-1 rounded truncate flex-1 opacity-70">
+                          {resolved.address || "Not configured"}
+                        </code>
+                        <button
+                          onClick={() => handleCopy(resolved.address, contractName)}
+                          disabled={!resolved.address}
+                          className="p-1.5 bg-background border border-border rounded hover:bg-accent text-muted-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Copy address"
+                        >
+                          {copiedId === contractName ? (
+                            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </section>
           </div>
         </div>

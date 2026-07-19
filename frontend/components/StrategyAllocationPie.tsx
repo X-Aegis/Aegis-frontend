@@ -10,6 +10,8 @@ import {
     Legend,
 } from "recharts";
 import * as StellarSdk from "@stellar/stellar-sdk";
+import { useContractAddress } from "@/hooks/useContractAddress";
+import { useNetwork } from "@/contexts/NetworkContext";
 
 interface AllocationData {
     name: string;
@@ -24,29 +26,21 @@ const MOCK_ALLOCATION: AllocationData[] = [
 ];
 
 export function StrategyAllocationPie() {
+    const contractId = useContractAddress("vault");
+    const { networkConfig } = useNetwork();
+    
     const [data, setData] = useState<AllocationData[]>(MOCK_ALLOCATION);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         async function fetchAllocation() {
-            const contractId = process.env.NEXT_PUBLIC_CONTRACT_ID;
-
-            if (!contractId) {
-                // Fallback to mock data if no contract is configured
-                setData(MOCK_ALLOCATION);
-                setIsLoading(false);
-                return;
-            }
-
             try {
-                const server = new StellarSdk.SorobanRpc.Server(
-                    process.env.NEXT_PUBLIC_SOROBAN_RPC_URL || "https://soroban-testnet.stellar.org"
-                );
+                const server = new StellarSdk.SorobanRpc.Server(networkConfig.rpcUrl);
 
                 // Example invocation to a hypothetical get_allocations method
                 const txBuilder = new StellarSdk.TransactionBuilder(
                     new StellarSdk.Account("GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF", "1"),
-                    { fee: "100", networkPassphrase: StellarSdk.Networks.TESTNET }
+                    { fee: "100", networkPassphrase: networkConfig.networkPassphrase }
                 );
 
                 // This simulates a contract simulation to fetch data (read-only)
@@ -65,7 +59,7 @@ export function StrategyAllocationPie() {
         }
 
         fetchAllocation();
-    }, []);
+    }, [contractId, networkConfig]);
 
     if (isLoading) {
         return (
