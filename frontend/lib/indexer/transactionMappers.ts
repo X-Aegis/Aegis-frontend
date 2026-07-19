@@ -6,6 +6,7 @@ import type {
 
 const DEPOSIT_TYPES = new Set(["deposit", "mint", "transfer_in"]);
 const WITHDRAW_TYPES = new Set(["withdraw", "burn", "transfer_out"]);
+const REBALANCE_TYPES = new Set(["rebalance", "reallocate", "strategy_rebalance"]);
 
 export function isDepositEvent(raw: IndexerEventRaw): boolean {
   return DEPOSIT_TYPES.has(raw.eventType.toLowerCase());
@@ -15,9 +16,14 @@ export function isWithdrawEvent(raw: IndexerEventRaw): boolean {
   return WITHDRAW_TYPES.has(raw.eventType.toLowerCase());
 }
 
+export function isRebalanceEvent(raw: IndexerEventRaw): boolean {
+  return REBALANCE_TYPES.has(raw.eventType.toLowerCase());
+}
+
 function kindFromEvent(raw: IndexerEventRaw): TransactionKind | null {
   if (isDepositEvent(raw)) return "DEPOSIT";
   if (isWithdrawEvent(raw)) return "WITHDRAW";
+  if (isRebalanceEvent(raw)) return "REBALANCE";
   return null;
 }
 

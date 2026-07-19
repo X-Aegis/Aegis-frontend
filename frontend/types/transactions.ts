@@ -1,4 +1,4 @@
-export type TransactionKind = "DEPOSIT" | "WITHDRAW";
+export type TransactionKind = "DEPOSIT" | "WITHDRAW" | "REBALANCE";
 
 export interface IndexerEventRaw {
   id: string;

@@ -1,9 +1,27 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import SettingsPage from "./page";
 
 describe("SettingsPage accessibility", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    Object.defineProperty(window, "Notification", {
+      configurable: true,
+      value: {
+        permission: "default",
+        requestPermission: jest.fn().mockResolvedValue("granted"),
+      },
+    });
+    Object.defineProperty(navigator, "serviceWorker", {
+      configurable: true,
+      value: {
+        register: jest.fn().mockResolvedValue({}),
+        ready: Promise.resolve({ showNotification: jest.fn() }),
+      },
+    });
+  });
+
   it("provides an accessible name for the back navigation link", () => {
     render(<SettingsPage />);
 
@@ -12,14 +30,21 @@ describe("SettingsPage accessibility", () => {
     ).toHaveAttribute("href", "/");
   });
 
-  it("exposes the notification toggle as a keyboard-accessible switch", () => {
+  it("exposes the notification toggle as a keyboard-accessible switch that opts in on click", async () => {
     render(<SettingsPage />);
 
     const notificationSwitch = screen.getByRole("switch", {
       name: /enable push notifications/i,
     });
 
-    expect(notificationSwitch).toHaveAttribute("aria-checked", "true");
+    // Starts opted out — this is a real opt-in now, not a decorative default.
+    expect(notificationSwitch).toHaveAttribute("aria-checked", "false");
+
+    fireEvent.click(notificationSwitch);
+
+    await waitFor(() =>
+      expect(notificationSwitch).toHaveAttribute("aria-checked", "true")
+    );
 
     fireEvent.click(notificationSwitch);
 
