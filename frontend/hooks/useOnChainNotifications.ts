@@ -30,7 +30,6 @@ interface UseOnChainNotificationsResult {
   clear: () => void;
 }
 
-const MERCURY_URL = process.env.NEXT_PUBLIC_MERCURY_URL;
 const MAX_STORED = 50;
 
 function seenKey(account: string) {
@@ -96,7 +95,7 @@ export function useOnChainNotifications({
 
     let raw: IndexerEventRaw[];
     try {
-      if (MERCURY_URL) {
+      if (process.env.NEXT_PUBLIC_MERCURY_URL) {
         const { fetchRecentEvents } = await import("@/lib/indexer/transactions");
         raw = await fetchRecentEvents({ account, limit });
       } else {
