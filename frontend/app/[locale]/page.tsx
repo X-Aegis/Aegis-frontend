@@ -21,6 +21,7 @@ import { PartnerDashboard } from "../../components/PartnerDashboard";
 import { Gift, HelpCircle } from "lucide-react";
 import { CurrencySwitch } from "../../components/CurrencySwitch";
 import { NetworkSwitch } from "../../components/NetworkSwitch";
+import { NotificationCenter } from "../../components/NotificationCenter";
 import { useCurrency } from "../../contexts/CurrencyContext";
 
 const MOCK_RISK_DATA = [
@@ -180,6 +181,7 @@ export default function Home() {
             <div className="hidden sm:block">
               <NetworkSwitch />
             </div>
+            <NotificationCenter />
             <button
               type="button"
               aria-pressed={activeTab === "deposit"}

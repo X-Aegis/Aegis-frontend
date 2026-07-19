@@ -2,6 +2,7 @@
 
 import { ArrowDownLeft, ArrowUpRight, RefreshCw } from "lucide-react";
 import type { TransactionItem, TransactionKind } from "@/types/transactions";
+import { formatRelativeTime } from "@/lib/utils";
 
 const KIND_STYLE: Record<
   TransactionKind,
@@ -37,19 +38,6 @@ interface TransactionHistoryRowProps {
   tx: TransactionItem;
 }
 
-function formatTimestamp(iso: string): string {
-  const date = new Date(iso);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffHrs = Math.floor(diffMs / 3_600_000);
-
-  if (diffHrs < 1) return "Just now";
-  if (diffHrs < 24) return `${diffHrs}h ago`;
-  const diffDays = Math.floor(diffHrs / 24);
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-}
-
 function shortenHash(hash: string): string {
   if (hash.length <= 12) return hash;
   return `${hash.slice(0, 6)}…${hash.slice(-4)}`;
@@ -78,7 +66,7 @@ export function TransactionHistoryRow({ tx }: TransactionHistoryRowProps) {
       <div className="flex-1 min-w-0">
         <p className="text-xs sm:text-sm font-semibold leading-tight">{label}</p>
         <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate">
-          {shortenHash(tx.txHash)} &middot; {formatTimestamp(tx.timestampISO)}
+          {shortenHash(tx.txHash)} &middot; {formatRelativeTime(tx.timestampISO)}
         </p>
       </div>
 
