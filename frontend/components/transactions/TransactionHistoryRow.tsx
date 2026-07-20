@@ -1,23 +1,41 @@
 "use client";
 
-import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
-import type { TransactionItem } from "@/types/transactions";
+import { ArrowDownLeft, ArrowUpRight, RefreshCw } from "lucide-react";
+import type { TransactionItem, TransactionKind } from "@/types/transactions";
+import { formatRelativeTime } from "@/lib/utils";
+
+const KIND_STYLE: Record<
+  TransactionKind,
+  { Icon: typeof ArrowDownLeft; label: string; iconBg: string; iconColor: string; amountColor: string; sign: string }
+> = {
+  DEPOSIT: {
+    Icon: ArrowDownLeft,
+    label: "Deposit",
+    iconBg: "bg-green-500/10",
+    iconColor: "text-green-500",
+    amountColor: "text-green-500",
+    sign: "+",
+  },
+  WITHDRAW: {
+    Icon: ArrowUpRight,
+    label: "Withdraw",
+    iconBg: "bg-red-500/10",
+    iconColor: "text-red-500",
+    amountColor: "text-red-400",
+    sign: "−",
+  },
+  REBALANCE: {
+    Icon: RefreshCw,
+    label: "Rebalance",
+    iconBg: "bg-blue-500/10",
+    iconColor: "text-blue-500",
+    amountColor: "text-muted-foreground",
+    sign: "",
+  },
+};
 
 interface TransactionHistoryRowProps {
   tx: TransactionItem;
-}
-
-function formatTimestamp(iso: string): string {
-  const date = new Date(iso);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffHrs = Math.floor(diffMs / 3_600_000);
-
-  if (diffHrs < 1) return "Just now";
-  if (diffHrs < 24) return `${diffHrs}h ago`;
-  const diffDays = Math.floor(diffHrs / 24);
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
 function shortenHash(hash: string): string {
@@ -35,13 +53,7 @@ function formatAmount(amount: string): string {
 }
 
 export function TransactionHistoryRow({ tx }: TransactionHistoryRowProps) {
-  const isDeposit = tx.kind === "DEPOSIT";
-  const Icon = isDeposit ? ArrowDownLeft : ArrowUpRight;
-  const kindLabel = isDeposit ? "Deposit" : "Withdraw";
-  const iconBg = isDeposit ? "bg-green-500/10" : "bg-red-500/10";
-  const iconColor = isDeposit ? "text-green-500" : "text-red-500";
-  const amountColor = isDeposit ? "text-green-500" : "text-red-400";
-  const sign = isDeposit ? "+" : "−";
+  const { Icon, label, iconBg, iconColor, amountColor, sign } = KIND_STYLE[tx.kind];
 
   return (
     <div className="flex items-center gap-2 sm:gap-3 py-2.5 border-b border-border last:border-0">
@@ -52,9 +64,9 @@ export function TransactionHistoryRow({ tx }: TransactionHistoryRowProps) {
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="text-xs sm:text-sm font-semibold leading-tight">{kindLabel}</p>
+        <p className="text-xs sm:text-sm font-semibold leading-tight">{label}</p>
         <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate">
-          {shortenHash(tx.txHash)} &middot; {formatTimestamp(tx.timestampISO)}
+          {shortenHash(tx.txHash)} &middot; {formatRelativeTime(tx.timestampISO)}
         </p>
       </div>
 

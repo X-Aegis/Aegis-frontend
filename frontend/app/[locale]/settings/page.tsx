@@ -21,11 +21,12 @@ import {
   Copy,
   Info
 } from 'lucide-react';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useNetwork } from '@/contexts/NetworkContext';
 import { resolveContract, getAllContractNames } from '@/lib/contracts.config';
 
 export default function SettingsPage() {
-  const [notifications, setNotifications] = useState(true);
+  const { optedIn, permission, enable, disable } = usePushNotifications();
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
   const [currency, setCurrency] = useState('USD');
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -38,6 +39,8 @@ export default function SettingsPage() {
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
+
+  const pushUnavailable = permission === 'unsupported' || permission === 'denied';
 
   const focusVisibleClass =
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background';
@@ -189,20 +192,26 @@ export default function SettingsPage() {
                 <button
                   type="button"
                   role="switch"
-                  aria-checked={notifications}
+                  aria-checked={optedIn}
                   aria-label="Enable push notifications"
-                  onClick={() => setNotifications(!notifications)}
-                  className={`w-12 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out ${focusVisibleClass} ${notifications ? 'bg-primary' : 'bg-muted'}`}
+                  disabled={pushUnavailable}
+                  onClick={() => (optedIn ? disable() : enable())}
+                  className={`w-12 h-6 rounded-full p-1 transition-colors duration-200 ease-in-out ${focusVisibleClass} ${optedIn ? 'bg-primary' : 'bg-muted'} ${pushUnavailable ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <span className="sr-only">
-                    {notifications ? 'Disable push notifications' : 'Enable push notifications'}
+                    {optedIn ? 'Disable push notifications' : 'Enable push notifications'}
                   </span>
                   <span
                     aria-hidden="true"
-                    className={`block w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-in-out ${notifications ? 'translate-x-6' : 'translate-x-0'}`}
+                    className={`block w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-in-out ${optedIn ? 'translate-x-6' : 'translate-x-0'}`}
                   />
                 </button>
               </div>
+              {permission === 'denied' && (
+                <p className="px-6 pt-4 text-xs text-muted-foreground">
+                  Notifications are blocked in your browser settings. Allow notifications for this site to enable this.
+                </p>
+              )}
               <div className="p-6 space-y-4">
                 <button
                   type="button"
