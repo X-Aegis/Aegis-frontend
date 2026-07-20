@@ -88,6 +88,7 @@ export default function Home() {
             { key: "partners", label: t('partners') },
             { key: "vaults", label: t('vaults'), href: "#" },
             { key: "swap", label: t('swap'), href: "#" },
+            { key: "bridge", label: t('bridge'), href: "/bridge" },
             { key: "settings", label: t('settings'), href: "/settings" },
           ].map((item) =>
             item.href ? (
@@ -174,6 +175,7 @@ export default function Home() {
             </button>
             <button type="button" className={`hover:text-foreground transition-colors rounded-sm ${focusVisibleClass}`}>{t('vaults')}</button>
             <button type="button" className={`hover:text-foreground transition-colors rounded-sm ${focusVisibleClass}`}>{t('swap')}</button>
+            <Link href="/bridge" className={`hover:text-foreground transition-colors rounded-sm ${focusVisibleClass}`}>{t('bridge')}</Link>
             <Link href="/settings" className={`hover:text-foreground transition-colors rounded-sm ${focusVisibleClass}`}>{t('settings')}</Link>
           </nav>
           <div className="flex items-center gap-2 sm:gap-4">
