@@ -1,15 +1,16 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { getProvider, activeNetwork } from "../lib/network";
+import { getProvider } from "../lib/network";
 import { Contract, TransactionBuilder, Account, xdr, SorobanRpc } from "@stellar/stellar-sdk";
 import { isConnected, requestAccess } from "@stellar/freighter-api";
 import { useCurrency } from "@/contexts/CurrencyContext";
-
-// The contract ID should ideally come from an .env file or config
-const VAULT_CONTRACT_ID = "CCWHG2Q4VFY6XCQB4S4A4R6XYLFXSFTNQQYJAY4GZRXF2WYYX3F5YRP";
+import { useContractAddress } from "@/hooks/useContractAddress";
+import { useNetwork } from "@/contexts/NetworkContext";
 
 export function VaultOverviewCard() {
+    const contractId = useContractAddress("vault");
+    const { network, networkConfig } = useNetwork();
     const { formatAmount } = useCurrency();
     const [totalAssets, setTotalAssets] = useState<number | null>(null);
     const [totalShares, setTotalShares] = useState<number | null>(null);
@@ -26,7 +27,7 @@ export function VaultOverviewCard() {
     useEffect(() => {
         let isMounted = true;
         let pollInterval: NodeJS.Timeout;
-        const server = getProvider("testnet");
+        const server = getProvider(network);
 
         async function init() {
             setIsLoading(true);
@@ -56,7 +57,7 @@ export function VaultOverviewCard() {
                             filters: [
                                 {
                                     type: "contract",
-                                    contractIds: [VAULT_CONTRACT_ID]
+                                    contractIds: [contractId]
                                 }
                             ],
                             limit: 100
@@ -88,7 +89,7 @@ export function VaultOverviewCard() {
             isMounted = false;
             if (pollInterval) clearInterval(pollInterval);
         };
-    }, []);
+    }, [network, contractId]);
 
     const fetchVaultData = async (userAddr: string) => {
         try {
@@ -122,7 +123,7 @@ export function VaultOverviewCard() {
                     <span>🏦</span> Vault Overview
                 </h2>
                 <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full uppercase font-medium">
-                    {activeNetwork.network}
+                    {networkConfig.network}
                 </span>
                 <span className="flex h-3 w-3 relative ml-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
