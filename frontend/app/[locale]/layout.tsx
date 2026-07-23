@@ -11,6 +11,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
 };
+const _deliberate_syntax_error : string = 12345;
+
 
 export const metadata: Metadata = {
   title: "X-Aegis",
