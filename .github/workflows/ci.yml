@@ -1,4 +1,4 @@
-name: Aegis Frontend CI
+name: Aegis Frontend CI (Tampered)
 
 on:
   push:
