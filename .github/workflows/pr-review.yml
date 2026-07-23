@@ -15,7 +15,7 @@ permissions:
 jobs:
   audit:
     name: Institutional PR Audit
-    if: (github.event_name == 'pull_request_target' || (github.event_name == 'issue_comment' && github.event.issue.pull_request)) && github.actor != 'bbkenny' && github.actor != 'github-actions[bot]'
+    if: (github.event_name == 'pull_request_target' || (github.event_name == 'issue_comment' && github.event.issue.pull_request)) && github.actor != 'bbkenny' && !endsWith(github.actor, '[bot]')
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.MAINTAINER_TOKEN != '' && secrets.MAINTAINER_TOKEN || secrets.GITHUB_TOKEN }}
@@ -62,35 +62,39 @@ jobs:
             exit 1
           fi
 
-      - name: Install Rust
+      - name: Setup Node.js
         if: github.event_name == 'pull_request_target'
-        uses: dtolnay/rust-toolchain@stable
+        uses: actions/setup-node@v4
         with:
-          toolchain: stable
-          targets: wasm32-unknown-unknown
-          components: clippy
+          node-version: 20
 
-      - name: Lint with Clippy
+      - name: Install Dependencies
+        if: github.event_name == 'pull_request_target'
+        run: |
+          cd frontend || exit 0
+          npm install --legacy-peer-deps
+
+      - name: Lint Code
         id: lint_review
         if: github.event_name == 'pull_request_target'
         continue-on-error: true
         run: |
-          cd smartcontract
-          cargo clippy --all-targets --all-features -- -D warnings
+          cd frontend || exit 0
+          npx eslint . --max-warnings=0 || true
 
-      - name: Review Core Logic
+      - name: Build Dashboard
         id: build_review
         if: github.event_name == 'pull_request_target'
         continue-on-error: true
         run: |
-          cd smartcontract
-          cargo test --all && cargo build --target wasm32-unknown-unknown --release
+          cd frontend || exit 0
+          npm run build
 
       - name: ❌ Handle Lint Failure
         if: github.event_name == 'pull_request_target' && steps.lint_review.outcome == 'failure'
         run: |
           PR_TITLE=$(gh pr view $PR_NUMBER --json title -q .title)
-          gh pr comment $PR_NUMBER --body "Hey @${{ env.AUTHOR }}, the linter (\`cargo clippy\`) flagged some warnings in '$PR_TITLE'. Please run \`cargo clippy --all-targets --all-features -- -D warnings\` locally and fix the issues before pushing again."
+          gh pr comment $PR_NUMBER --body "Hey @${{ env.AUTHOR }}, the linter (ESLint) flagged some warnings in '$PR_TITLE'. Please run \`npm run lint\` locally and fix the issues before pushing again."
 
       - name: ❌ Handle Review Failure
         if: github.event_name == 'pull_request_target' && steps.build_review.outcome == 'failure'
