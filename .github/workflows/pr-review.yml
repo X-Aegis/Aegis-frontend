@@ -174,7 +174,7 @@ jobs:
 
           async function run() {
             try {
-              console.log('🌐 Calling Anthropic API (model: claude-sonnet-4-20250514)...');
+              console.log('🌐 Calling Anthropic API (model: claude-3-haiku-20240307)...');
               const res = await fetch('https://api.anthropic.com/v1/messages', {
                 method: 'POST',
                 headers: {
@@ -183,7 +183,7 @@ jobs:
                   'anthropic-version': '2023-06-01'
                 },
                 body: JSON.stringify({
-                  model: 'claude-3-5-sonnet-20241022',
+                  model: 'claude-3-haiku-20240307',
                   max_tokens: 1500,
                   messages: [{role: 'user', content: prompt}]
                 })
