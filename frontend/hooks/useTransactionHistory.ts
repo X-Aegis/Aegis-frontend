@@ -66,6 +66,21 @@ export function useTransactionHistory({
     return () => abortRef.current?.abort();
   }, [refresh]);
 
+  useEffect(() => {
+    const handleOptimisticTx = (e: Event) => {
+      const customEvent = e as CustomEvent<IndexerEventRaw>;
+      const newItem = normalizeAndSort([customEvent.detail])[0];
+      if (newItem) {
+        setItems((prev) => {
+          if (prev.some((item) => item.id === newItem.id)) return prev;
+          return [newItem, ...prev];
+        });
+      }
+    };
+    window.addEventListener("optimistic_tx", handleOptimisticTx);
+    return () => window.removeEventListener("optimistic_tx", handleOptimisticTx);
+  }, []);
+
   return { items, loading, error, refresh };
 }
 

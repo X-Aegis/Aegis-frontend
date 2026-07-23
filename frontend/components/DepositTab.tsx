@@ -33,7 +33,7 @@ export function DepositTab() {
     const [overlayTxHash, setOverlayTxHash] = useState<string | null>(null);
     const [overlayError, setOverlayError] = useState<string | null>(null);
 
-    const mockUserBalance = 5000.0;
+    const [mockUserBalance, setMockUserBalance] = useState<number>(5000.0);
 
     useEffect(() => {
         async function checkConnection() {
@@ -155,6 +155,21 @@ export function DepositTab() {
             setOverlayTxHash(result.hash);
             setOverlayStatus("success");
             toast.success(`Deposit successful! Hash: ${result.hash}`);
+            
+            setMockUserBalance((prev) => prev - depositAmount);
+            const optEvent = new CustomEvent("optimistic_tx", {
+                detail: {
+                    id: result.hash,
+                    eventType: "deposit",
+                    txHash: result.hash,
+                    timestamp: new Date().toISOString(),
+                    amount: depositAmount.toString(),
+                    asset: "USDC",
+                    account: address,
+                }
+            });
+            window.dispatchEvent(optEvent);
+
             setAmount("");
         } catch (error: unknown) {
             console.error(error);

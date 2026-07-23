@@ -33,7 +33,7 @@ export function WithdrawTab() {
     const [overlayTxHash, setOverlayTxHash] = useState<string | null>(null);
     const [overlayError, setOverlayError] = useState<string | null>(null);
 
-    const mockUserBalance = 1000.0;
+    const [mockUserBalance, setMockUserBalance] = useState<number>(1000.0);
 
     useEffect(() => {
         async function checkConnection() {
@@ -155,6 +155,21 @@ export function WithdrawTab() {
             setOverlayTxHash(result.hash);
             setOverlayStatus("success");
             toast.success(`Withdrawal successful! Hash: ${result.hash}`);
+            
+            setMockUserBalance((prev) => prev - withdrawAmount);
+            const optEvent = new CustomEvent("optimistic_tx", {
+                detail: {
+                    id: result.hash,
+                    eventType: "withdraw",
+                    txHash: result.hash,
+                    timestamp: new Date().toISOString(),
+                    amount: withdrawAmount.toString(),
+                    asset: "USDC",
+                    account: address,
+                }
+            });
+            window.dispatchEvent(optEvent);
+
             setAmount("");
         } catch (error: unknown) {
             console.error(error);
