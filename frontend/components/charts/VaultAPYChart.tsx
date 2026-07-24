@@ -37,7 +37,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-export function VaultAPYChart({ vaultId }: VaultAPYChartProps) {
+export const VaultAPYChart = React.memo(function VaultAPYChart({ vaultId }: VaultAPYChartProps) {
   const [timeframe, setTimeframe] = useState<Timeframe>("1M");
   const { data, loading } = useVaultData(vaultId, timeframe);
 
@@ -138,4 +138,4 @@ export function VaultAPYChart({ vaultId }: VaultAPYChartProps) {
       </ResponsiveContainer>
     </div>
   );
-}
+});

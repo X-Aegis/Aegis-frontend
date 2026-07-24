@@ -12,7 +12,9 @@ interface RiskChartProps {
     height?: number;
 }
 
-export function RiskChart({ data, height = 200 }: RiskChartProps) {
+import React from "react";
+
+export const RiskChart = React.memo(function RiskChart({ data, height = 200 }: RiskChartProps) {
     const points = useMemo(() => {
         if (data.length === 0) return "";
 
@@ -90,4 +92,4 @@ export function RiskChart({ data, height = 200 }: RiskChartProps) {
             </div>
         </div>
     );
-}
+});
