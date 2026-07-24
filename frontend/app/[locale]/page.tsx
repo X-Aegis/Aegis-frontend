@@ -7,18 +7,30 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { AiInsightStream } from "../../components/AiInsightStream";
 import { VaultOverviewCard } from "../../components/VaultOverviewCard";
-import { VaultAPYChart } from "../../components/charts/VaultAPYChart";
-import { TransactionHistoryList } from "@/components/transactions/TransactionHistoryList";
+import dynamic from 'next/dynamic';
 import Link from "next/link";
-import { TrendingUp, Shield, BarChart3, ArrowUpRight, Menu, X } from "lucide-react";
-import { RiskChart } from "../../components/RiskChart";
+import { TrendingUp, Shield, BarChart3, ArrowUpRight, Menu, X, Gift, HelpCircle } from "lucide-react";
+
+const VaultAPYChart = dynamic(() => import('../../components/charts/VaultAPYChart').then(mod => mod.VaultAPYChart), {
+  ssr: false,
+  loading: () => <div className="w-full h-72 sm:h-80 md:h-96 lg:h-[400px] flex items-center justify-center bg-card/50 rounded-xl border border-border animate-pulse"><p className="text-muted-foreground">Loading chart...</p></div>
+});
+
+const TransactionHistoryList = dynamic(() => import('@/components/transactions/TransactionHistoryList').then(mod => mod.TransactionHistoryList), {
+  ssr: false,
+  loading: () => <div className="h-64 flex items-center justify-center bg-card rounded-xl animate-pulse"><p className="text-muted-foreground">Loading history...</p></div>
+});
+
+const RiskChart = dynamic(() => import('../../components/RiskChart').then(mod => mod.RiskChart), {
+  ssr: false,
+  loading: () => <div className="min-h-[200px] flex items-center justify-center animate-pulse"><p className="text-muted-foreground">Loading risk data...</p></div>
+});
 import { RiskBadge } from "../../components/RiskBadge";
 import { WithdrawTab } from "../../components/WithdrawTab";
 import { DepositTab } from "../../components/DepositTab";
 import { ReferralLinkCard } from "../../components/ReferralLinkCard";
 import { ReferralStatsCard } from "../../components/ReferralStatsCard";
 import { PartnerDashboard } from "../../components/PartnerDashboard";
-import { Gift, HelpCircle } from "lucide-react";
 import { CurrencySwitch } from "../../components/CurrencySwitch";
 import { NetworkSwitch } from "../../components/NetworkSwitch";
 import { NotificationCenter } from "../../components/NotificationCenter";
