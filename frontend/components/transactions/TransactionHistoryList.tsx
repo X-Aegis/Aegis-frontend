@@ -10,10 +10,21 @@ import {
   ErrorState,
 } from "./TransactionHistoryStates";
 
-export function TransactionHistoryList() {
+import React, { useRef } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
+
+export const TransactionHistoryList = React.memo(function TransactionHistoryList() {
+  const parentRef = useRef<HTMLDivElement>(null);
   const { address } = useFreighter();
   const { items, loading, error, refresh } = useTransactionHistory({
     account: address,
+  });
+
+  const rowVirtualizer = useVirtualizer({
+    count: items.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 80,
+    overscan: 5,
   });
 
   const handleExportCSV = () => {
@@ -77,12 +88,38 @@ export function TransactionHistoryList() {
       {!loading && error && <ErrorState message={error} onRetry={refresh} />}
       {!loading && !error && items.length === 0 && <EmptyState />}
       {!loading && !error && items.length > 0 && (
-        <div>
-          {items.map((tx) => (
-            <TransactionHistoryRow key={tx.id} tx={tx} />
-          ))}
+        <div
+          ref={parentRef}
+          style={{
+            height: '400px',
+            overflow: 'auto',
+          }}
+        >
+          <div
+            style={{
+              height: `${rowVirtualizer.getTotalSize()}px`,
+              width: '100%',
+              position: 'relative',
+            }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualItem) => (
+              <div
+                key={virtualItem.key}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: `${virtualItem.size}px`,
+                  transform: `translateY(${virtualItem.start}px)`,
+                }}
+              >
+                <TransactionHistoryRow tx={items[virtualItem.index]} />
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
   );
-}
+});
