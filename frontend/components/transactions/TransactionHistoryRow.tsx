@@ -55,24 +55,47 @@ function formatAmount(amount: string): string {
 export function TransactionHistoryRow({ tx }: TransactionHistoryRowProps) {
   const { Icon, label, iconBg, iconColor, amountColor, sign } = KIND_STYLE[tx.kind];
 
-  return (
-    <div className="flex items-center gap-2 sm:gap-3 py-2.5 border-b border-border last:border-0">
-      <div
-        className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center shrink-0 ${iconBg}`}
-      >
-        <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${iconColor}`} />
-      </div>
+  const showTimeline = tx.status && tx.status !== "confirmed" && tx.status !== "failed";
 
-      <div className="flex-1 min-w-0">
-        <p className="text-xs sm:text-sm font-semibold leading-tight">{label}</p>
-        <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate">
-          {shortenHash(tx.txHash)} &middot; {formatRelativeTime(tx.timestampISO)}
+  return (
+    <div className="flex flex-col border-b border-border last:border-0 py-2.5">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <div
+          className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center shrink-0 ${iconBg}`}
+        >
+          <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${iconColor}`} />
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <p className="text-xs sm:text-sm font-semibold leading-tight">{label}</p>
+          <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate">
+            {shortenHash(tx.txHash)} &middot; {formatRelativeTime(tx.timestampISO)}
+          </p>
+        </div>
+
+        <p className={`text-xs sm:text-sm font-bold tabular-nums whitespace-nowrap shrink-0 ${amountColor}`}>
+          {sign}{formatAmount(tx.amount)} {tx.asset}
         </p>
       </div>
-
-      <p className={`text-xs sm:text-sm font-bold tabular-nums whitespace-nowrap shrink-0 ${amountColor}`}>
-        {sign}{formatAmount(tx.amount)} {tx.asset}
-      </p>
+      
+      {showTimeline && (
+        <div className="mt-2 ml-10 flex items-center gap-2 text-[10px] sm:text-xs">
+          <div className="flex items-center">
+            <div className={`w-2 h-2 rounded-full ${tx.status === "signed" || tx.status === "submitted" ? "bg-emerald-500" : "bg-muted"}`} />
+            <span className={`ml-1 ${tx.status === "signed" || tx.status === "submitted" ? "text-emerald-600 font-medium" : "text-muted-foreground"}`}>Signed</span>
+          </div>
+          <div className={`flex-1 h-px ${tx.status === "submitted" ? "bg-emerald-500" : "bg-muted"}`} />
+          <div className="flex items-center">
+            <div className={`w-2 h-2 rounded-full ${tx.status === "submitted" ? "bg-emerald-500" : "bg-muted"}`} />
+            <span className={`ml-1 ${tx.status === "submitted" ? "text-emerald-600 font-medium" : "text-muted-foreground"}`}>Submitted</span>
+          </div>
+          <div className="flex-1 h-px bg-muted" />
+          <div className="flex items-center">
+            <div className="w-2 h-2 rounded-full bg-muted" />
+            <span className="ml-1 text-muted-foreground">Confirmed</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

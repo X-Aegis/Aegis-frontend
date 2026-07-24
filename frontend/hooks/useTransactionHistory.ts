@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import type {
   IndexerEventRaw,
   TransactionItem,
 } from "@/types/transactions";
 import { normalizeAndSort } from "@/lib/indexer/transactionMappers";
+import { useVaultContext } from "@/contexts/VaultContext";
 
 const MERCURY_URL = process.env.NEXT_PUBLIC_MERCURY_URL;
 
@@ -22,6 +23,7 @@ export function useTransactionHistory({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const { optimisticTransactions, updateOptimisticTransaction } = useVaultContext();
 
   const refresh = useCallback(async () => {
     abortRef.current?.abort();
@@ -49,7 +51,15 @@ export function useTransactionHistory({
       }
 
       if (!controller.signal.aborted) {
-        setItems(normalizeAndSort(events));
+        // Find if any optimistic tx is now confirmed in the events
+        const newItems = normalizeAndSort(events);
+        newItems.forEach((item) => {
+          const opt = optimisticTransactions.find(t => t.id === item.id);
+          if (opt && opt.status !== "confirmed") {
+            updateOptimisticTransaction(opt.id, { status: "confirmed" });
+          }
+        });
+        setItems(newItems);
       }
     } catch (err: unknown) {
       if (err instanceof DOMException && err.name === "AbortError") return;
@@ -59,14 +69,37 @@ export function useTransactionHistory({
         setLoading(false);
       }
     }
-  }, [account, limit]);
+  }, [account, limit, optimisticTransactions, updateOptimisticTransaction]);
 
   useEffect(() => {
     refresh();
     return () => abortRef.current?.abort();
   }, [refresh]);
 
-  return { items, loading, error, refresh };
+  // Merge optimistic transactions with fetched items
+  const mergedItems = useMemo(() => {
+    const all = [...optimisticTransactions, ...items];
+    // deduplicate by id, preferring optimistic ones because they have the "status" field we need
+    const map = new Map<string, TransactionItem>();
+    
+    items.forEach(item => map.set(item.id, item));
+    optimisticTransactions.forEach(item => {
+      // If it exists in items, it means it's confirmed, but we want the optimistic version 
+      // if it has newer status, or we just want to ensure we don't show duplicates.
+      if (map.has(item.id)) {
+        const existing = map.get(item.id)!;
+        map.set(item.id, { ...existing, status: item.status });
+      } else {
+        map.set(item.id, item);
+      }
+    });
+
+    return Array.from(map.values()).sort((a, b) => 
+      new Date(b.timestampISO).getTime() - new Date(a.timestampISO).getTime()
+    );
+  }, [items, optimisticTransactions]);
+
+  return { items: mergedItems, loading, error, refresh };
 }
 
 export function generateMockEvents(count: number): IndexerEventRaw[] {

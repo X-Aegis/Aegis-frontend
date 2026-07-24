@@ -12,6 +12,8 @@ export interface IndexerEventRaw {
   metadata?: Record<string, unknown>;
 }
 
+export type TxStatus = "signed" | "submitted" | "confirmed" | "failed";
+
 export interface TransactionItem {
   id: string;
   kind: TransactionKind;
@@ -21,6 +23,7 @@ export interface TransactionItem {
   amount: string;
   asset: string;
   account?: string;
+  status?: TxStatus;
 }
 
 export interface TransactionHistoryState {

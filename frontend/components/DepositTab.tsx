@@ -17,6 +17,7 @@ import {
 import { SigningOverlay, type SigningStatus } from "./SigningOverlay";
 import { useContractAddress } from "@/hooks/useContractAddress";
 import { useNetwork } from "@/contexts/NetworkContext";
+import { useVaultContext } from "@/contexts/VaultContext";
 
 export function DepositTab() {
     const contractId = useContractAddress("vault");
@@ -33,7 +34,7 @@ export function DepositTab() {
     const [overlayTxHash, setOverlayTxHash] = useState<string | null>(null);
     const [overlayError, setOverlayError] = useState<string | null>(null);
 
-    const mockUserBalance = 5000.0;
+    const { optimisticBalance, addOptimisticTransaction, updateOptimisticTransaction } = useVaultContext();
 
     useEffect(() => {
         async function checkConnection() {
@@ -89,8 +90,8 @@ export function DepositTab() {
             return;
         }
 
-        if (depositAmount > mockUserBalance) {
-            toast.error(`Insufficient balance. (Available: ${mockUserBalance})`);
+        if (depositAmount > optimisticBalance) {
+            toast.error(`Insufficient balance. (Available: ${optimisticBalance})`);
             return;
         }
 
@@ -155,6 +156,18 @@ export function DepositTab() {
             setOverlayTxHash(result.hash);
             setOverlayStatus("success");
             toast.success(`Deposit successful! Hash: ${result.hash}`);
+            
+            addOptimisticTransaction({
+                id: result.hash,
+                kind: "DEPOSIT",
+                txHash: result.hash,
+                timestampISO: new Date().toISOString(),
+                amount: depositAmount.toString(),
+                asset: "USDC",
+                account: address,
+                status: "submitted"
+            });
+
             setAmount("");
         } catch (error: unknown) {
             console.error(error);
@@ -221,7 +234,7 @@ export function DepositTab() {
                             className="flex justify-between mt-1 text-xs text-muted-foreground"
                         >
                             <span>Available Balance:</span>
-                            <span>{mockUserBalance} USDC</span>
+                            <span>{optimisticBalance} USDC</span>
                         </div>
                     </div>
 
