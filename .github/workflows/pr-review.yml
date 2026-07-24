@@ -65,20 +65,17 @@ jobs:
           fi
 
       - name: Setup Node.js
-        if: github.event_name == 'pull_request_target'
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Install Dependencies
-        if: github.event_name == 'pull_request_target'
         run: |
           cd frontend || exit 0
           npm install --legacy-peer-deps
 
       - name: Lint Code
         id: lint_review
-        if: github.event_name == 'pull_request_target'
         continue-on-error: true
         run: |
           cd frontend || exit 0
@@ -86,20 +83,21 @@ jobs:
 
       - name: Build Dashboard
         id: build_review
-        if: github.event_name == 'pull_request_target'
         continue-on-error: true
         run: |
           cd frontend || exit 0
           npm run build
 
       - name: ❌ Handle Lint Failure
-        if: github.event_name == 'pull_request_target' && steps.lint_review.outcome == 'failure'
+        if: steps.lint_review.outcome == 'failure'
         run: |
           PR_TITLE=$(gh pr view $PR_NUMBER --json title -q .title)
           gh pr comment $PR_NUMBER --body "Hey @${{ env.AUTHOR }}, the linter (ESLint) flagged some warnings in '$PR_TITLE'. Please run \`npm run lint\` locally and fix the issues before pushing again."
 
+          exit 1
+
       - name: ❌ Handle Review Failure
-        if: github.event_name == 'pull_request_target' && steps.build_review.outcome == 'failure'
+        if: steps.build_review.outcome == 'failure'
         run: |
           PR_TITLE=$(gh pr view $PR_NUMBER --json title -q .title)
           RESPONSES=(
@@ -116,7 +114,7 @@ jobs:
 
       - name: 🤖 AI Code Review (Claude)
         id: ai_review
-        if: (github.event_name == 'pull_request_target' && steps.build_review.outcome == 'success' && steps.lint_review.outcome == 'success') || github.event_name == 'issue_comment'
+        if: steps.build_review.outcome == 'success' && steps.lint_review.outcome == 'success'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
@@ -276,7 +274,7 @@ jobs:
           node ai_review.js
 
       - name: ✅ Handle Review Success
-        if: (github.event_name == 'pull_request_target' && steps.build_review.outcome == 'success' && steps.lint_review.outcome == 'success') || github.event_name == 'issue_comment'
+        if: steps.build_review.outcome == 'success' && steps.lint_review.outcome == 'success'
         run: |
           PR_TITLE=$(gh pr view $PR_NUMBER --json title -q .title)
           PR_NUMBER=$PR_NUMBER
