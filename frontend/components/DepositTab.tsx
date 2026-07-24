@@ -17,6 +17,7 @@ import {
 import { SigningOverlay, type SigningStatus } from "./SigningOverlay";
 import { useContractAddress } from "@/hooks/useContractAddress";
 import { useNetwork } from "@/contexts/NetworkContext";
+import { useVaultContext } from "@/contexts/VaultContext";
 
 export function DepositTab() {
     const contractId = useContractAddress("vault");
@@ -33,7 +34,7 @@ export function DepositTab() {
     const [overlayTxHash, setOverlayTxHash] = useState<string | null>(null);
     const [overlayError, setOverlayError] = useState<string | null>(null);
 
-    const [mockUserBalance, setMockUserBalance] = useState<number>(5000.0);
+    const { optimisticBalance, addOptimisticTransaction, updateOptimisticTransaction } = useVaultContext();
 
     useEffect(() => {
         async function checkConnection() {
@@ -89,8 +90,8 @@ export function DepositTab() {
             return;
         }
 
-        if (depositAmount > mockUserBalance) {
-            toast.error(`Insufficient balance. (Available: ${mockUserBalance})`);
+        if (depositAmount > optimisticBalance) {
+            toast.error(`Insufficient balance. (Available: ${optimisticBalance})`);
             return;
         }
 
@@ -156,19 +157,16 @@ export function DepositTab() {
             setOverlayStatus("success");
             toast.success(`Deposit successful! Hash: ${result.hash}`);
             
-            setMockUserBalance((prev) => prev - depositAmount);
-            const optEvent = new CustomEvent("optimistic_tx", {
-                detail: {
-                    id: result.hash,
-                    eventType: "deposit",
-                    txHash: result.hash,
-                    timestamp: new Date().toISOString(),
-                    amount: depositAmount.toString(),
-                    asset: "USDC",
-                    account: address,
-                }
+            addOptimisticTransaction({
+                id: result.hash,
+                kind: "DEPOSIT",
+                txHash: result.hash,
+                timestampISO: new Date().toISOString(),
+                amount: depositAmount.toString(),
+                asset: "USDC",
+                account: address,
+                status: "submitted"
             });
-            window.dispatchEvent(optEvent);
 
             setAmount("");
         } catch (error: unknown) {
@@ -236,7 +234,7 @@ export function DepositTab() {
                             className="flex justify-between mt-1 text-xs text-muted-foreground"
                         >
                             <span>Available Balance:</span>
-                            <span>{mockUserBalance} USDC</span>
+                            <span>{optimisticBalance} USDC</span>
                         </div>
                     </div>
 

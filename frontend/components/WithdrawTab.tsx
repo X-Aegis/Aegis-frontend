@@ -17,6 +17,7 @@ import {
 import { SigningOverlay, type SigningStatus } from "./SigningOverlay";
 import { useContractAddress } from "@/hooks/useContractAddress";
 import { useNetwork } from "@/contexts/NetworkContext";
+import { useVaultContext } from "@/contexts/VaultContext";
 
 export function WithdrawTab() {
     const contractId = useContractAddress("vault");
@@ -33,7 +34,7 @@ export function WithdrawTab() {
     const [overlayTxHash, setOverlayTxHash] = useState<string | null>(null);
     const [overlayError, setOverlayError] = useState<string | null>(null);
 
-    const [mockUserBalance, setMockUserBalance] = useState<number>(1000.0);
+    const { optimisticBalance, addOptimisticTransaction } = useVaultContext();
 
     useEffect(() => {
         async function checkConnection() {
@@ -89,8 +90,10 @@ export function WithdrawTab() {
             return;
         }
 
-        if (withdrawAmount > mockUserBalance) {
-            toast.error(`Insufficient balance. (Available: ${mockUserBalance})`);
+        // Note: For withdrawals, we'd ideally check the user's share balance in the vault,
+        // not their wallet balance, but we'll use optimisticBalance here for simplicity as requested.
+        if (withdrawAmount > optimisticBalance) {
+            toast.error(`Insufficient balance. (Available: ${optimisticBalance})`);
             return;
         }
 
@@ -156,19 +159,16 @@ export function WithdrawTab() {
             setOverlayStatus("success");
             toast.success(`Withdrawal successful! Hash: ${result.hash}`);
             
-            setMockUserBalance((prev) => prev - withdrawAmount);
-            const optEvent = new CustomEvent("optimistic_tx", {
-                detail: {
-                    id: result.hash,
-                    eventType: "withdraw",
-                    txHash: result.hash,
-                    timestamp: new Date().toISOString(),
-                    amount: withdrawAmount.toString(),
-                    asset: "USDC",
-                    account: address,
-                }
+            addOptimisticTransaction({
+                id: result.hash,
+                kind: "WITHDRAW",
+                txHash: result.hash,
+                timestampISO: new Date().toISOString(),
+                amount: withdrawAmount.toString(),
+                asset: "USDC",
+                account: address,
+                status: "submitted"
             });
-            window.dispatchEvent(optEvent);
 
             setAmount("");
         } catch (error: unknown) {
@@ -236,7 +236,7 @@ export function WithdrawTab() {
                             className="flex justify-between mt-1 text-xs text-muted-foreground"
                         >
                             <span>Available Balance:</span>
-                            <span>{mockUserBalance} USDC</span>
+                            <span>{optimisticBalance} USDC</span>
                         </div>
                     </div>
 
