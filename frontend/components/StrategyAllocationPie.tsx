@@ -17,13 +17,21 @@ interface AllocationData {
     name: string;
     value: number;
     color: string;
+    /** Per-asset risk score, 1 (safest) - 10 (riskiest). */
+    riskScore: number;
 }
 
 const MOCK_ALLOCATION: AllocationData[] = [
-    { name: "USDC Reserves", value: 40, color: "hsl(var(--primary))" },
-    { name: "Stellar LP", value: 35, color: "hsl(var(--primary) / 0.7)" },
-    { name: "Synthetic Hedges", value: 25, color: "hsl(var(--primary) / 0.4)" },
+    { name: "USDC Reserves", value: 40, color: "hsl(var(--primary))", riskScore: 1 },
+    { name: "Stellar LP", value: 35, color: "hsl(var(--primary) / 0.7)", riskScore: 5 },
+    { name: "Synthetic Hedges", value: 25, color: "hsl(var(--primary) / 0.4)", riskScore: 8 },
 ];
+
+function riskLabel(score: number): string {
+    if (score <= 3) return "Low";
+    if (score <= 6) return "Medium";
+    return "High";
+}
 
 export function StrategyAllocationPie() {
     const contractId = useContractAddress("vault");
@@ -31,6 +39,7 @@ export function StrategyAllocationPie() {
     
     const [data, setData] = useState<AllocationData[]>(MOCK_ALLOCATION);
     const [isLoading, setIsLoading] = useState(true);
+    const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
 
     useEffect(() => {
         async function fetchAllocation() {
@@ -71,9 +80,14 @@ export function StrategyAllocationPie() {
 
     const CustomTooltip = ({ active, payload }: any) => {
         if (active && payload && payload.length) {
+            const asset: AllocationData = payload[0].payload;
             return (
-                <div className="bg-background border rounded-lg p-3 shadow-sm">
-                    <p className="font-medium text-sm">{`${payload[0].name}: ${payload[0].value}%`}</p>
+                <div className="bg-background border rounded-lg p-3 shadow-sm space-y-1">
+                    <p className="font-medium text-sm">{`${asset.name}: ${asset.value}%`}</p>
+                    <p className="text-xs text-muted-foreground">
+                        Risk score: <span className="font-medium text-foreground">{asset.riskScore}/10</span>{" "}
+                        ({riskLabel(asset.riskScore)})
+                    </p>
                 </div>
             );
         }
@@ -93,9 +107,15 @@ export function StrategyAllocationPie() {
                         paddingAngle={5}
                         dataKey="value"
                         stroke="none"
+                        onMouseEnter={(_, index) => setActiveIndex(index)}
+                        onMouseLeave={() => setActiveIndex(undefined)}
                     >
                         {data.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
+                            <Cell
+                                key={`cell-${index}`}
+                                fill={entry.color}
+                                opacity={activeIndex === undefined || activeIndex === index ? 1 : 0.5}
+                            />
                         ))}
                     </Pie>
                     <Tooltip content={<CustomTooltip />} />
