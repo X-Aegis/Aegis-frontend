@@ -12,9 +12,33 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+// Placeholder production domain -- override with the real deployment URL
+// via NEXT_PUBLIC_SITE_URL once one is assigned. Consumed here and by
+// app/sitemap.ts / app/robots.ts so there is a single source of truth.
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://xaegis.app";
+const SITE_TITLE = "X-Aegis — Stablecoin Volatility Shield";
+const SITE_DESCRIPTION = "Stablecoin Volatility Shield for Weak Currencies";
+
 export const metadata: Metadata = {
-  title: "X-Aegis",
-  description: "Stablecoin Volatility Shield for Weak Currencies",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: SITE_TITLE,
+    template: "%s | X-Aegis",
+  },
+  description: SITE_DESCRIPTION,
+  keywords: ["X-Aegis", "stablecoin", "volatility hedge", "Stellar", "Soroban", "DeFi", "vault"],
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    siteName: "X-Aegis",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export default async function RootLayout({
