@@ -18,6 +18,7 @@ import { SigningOverlay, type SigningStatus } from "./SigningOverlay";
 import { useContractAddress } from "@/hooks/useContractAddress";
 import { useNetwork } from "@/contexts/NetworkContext";
 import { useVaultContext } from "@/contexts/VaultContext";
+import { useLegalAcceptance, LegalModals } from "./LegalModals";
 
 export function DepositTab() {
     const contractId = useContractAddress("vault");
@@ -35,6 +36,8 @@ export function DepositTab() {
     const [overlayError, setOverlayError] = useState<string | null>(null);
 
     const { optimisticBalance, addOptimisticTransaction, updateOptimisticTransaction } = useVaultContext();
+    const { accepted: legalAccepted, accept: acceptLegal } = useLegalAcceptance();
+    const [showLegalConsent, setShowLegalConsent] = useState(false);
 
     useEffect(() => {
         async function checkConnection() {
@@ -92,6 +95,12 @@ export function DepositTab() {
 
         if (depositAmount > optimisticBalance) {
             toast.error(`Insufficient balance. (Available: ${optimisticBalance})`);
+            return;
+        }
+
+        if (!legalAccepted) {
+            setShowLegalConsent(true);
+            toast.warning("Please accept the Terms of Service and Privacy Policy first.");
             return;
         }
 
@@ -187,6 +196,14 @@ export function DepositTab() {
                 error={overlayError}
                 onClose={() => setOverlayOpen(false)}
             />
+            <LegalModals
+                forceOpen={showLegalConsent && !legalAccepted}
+                onAccept={() => {
+                    acceptLegal();
+                    setShowLegalConsent(false);
+                }}
+                onClose={() => setShowLegalConsent(false)}
+            />
             <div className="w-full mx-auto p-4 sm:p-6 bg-transparent">
                 <h2 id="deposit-form-title" className="text-2xl font-semibold mb-4 text-card-foreground">
                     Deposit Funds
@@ -245,6 +262,43 @@ export function DepositTab() {
                         <span>Estimated Network Fee:</span>
                         <span>{estimatedFee}</span>
                     </div>
+
+                    {showLegalConsent && !legalAccepted && (
+                        <div className="space-y-3 p-4 bg-muted/30 border border-border rounded-xl">
+                            <div className="flex items-start gap-3">
+                                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+                                    <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-sm font-semibold text-foreground">
+                                        Legal Agreement
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">
+                                        By depositing, you agree to the Terms of Service and Privacy Policy.
+                                    </p>
+                                </div>
+                            </div>
+                            <label className="flex items-center gap-2 cursor-pointer group">
+                                <input
+                                    type="checkbox"
+                                    checked={legalAccepted}
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            acceptLegal();
+                                            setShowLegalConsent(false);
+                                        }
+                                    }}
+                                    className="w-4 h-4 rounded border-border text-primary focus:ring-primary focus:ring-offset-2 focus:ring-offset-background cursor-pointer"
+                                    aria-label="Accept Terms of Service and Privacy Policy"
+                                />
+                                <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                                    I have read and agree to the Terms of Service and Privacy Policy
+                                </span>
+                            </label>
+                        </div>
+                    )}
 
                     <button
                         type="submit"

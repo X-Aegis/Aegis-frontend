@@ -65,5 +65,13 @@
     "failedToLoad": "Error al cargar datos",
     "retry": "Reintentar",
     "loading": "Cargando datos"
+  },
+  "LegalModals": {
+    "termsOfService": "Términos del Servicio",
+    "privacyPolicy": "Política de Privacidad",
+    "legalAgreement": "Acuerdo Legal",
+    "legalDescription": "Al depositar, aceptas los Términos del Servicio y la Política de Privacidad.",
+    "acceptLabel": "He leído y acepto los Términos del Servicio y la Política de Privacidad",
+    "acceptFirst": "Por favor, acepta los Términos del Servicio y la Política de Privacidad primero."
   }
 }
