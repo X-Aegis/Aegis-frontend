@@ -66,5 +66,13 @@
     "failedToLoad": "Failed to load data",
     "retry": "Retry",
     "loading": "Loading data"
+  },
+  "LegalModals": {
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "legalAgreement": "Legal Agreement",
+    "legalDescription": "By depositing, you agree to the Terms of Service and Privacy Policy.",
+    "acceptLabel": "I have read and agree to the Terms of Service and Privacy Policy",
+    "acceptFirst": "Please accept the Terms of Service and Privacy Policy first."
   }
 }
