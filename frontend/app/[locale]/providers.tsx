@@ -9,6 +9,7 @@ import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { NetworkProvider } from "@/contexts/NetworkContext";
 import { VaultProvider } from "@/contexts/VaultContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
+import { OnboardingTour } from "@/components/OnboardingTour";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -22,6 +23,7 @@ export function Providers({ children }: { children: ReactNode }) {
               </SessionProvider>
             </VaultProvider>
           </CurrencyProvider>
+          <OnboardingTour />
           <Toaster richColors closeButton position="bottom-right" />
         </ThemeProvider>
       </FreighterProvider>
