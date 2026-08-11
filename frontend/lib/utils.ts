@@ -44,5 +44,5 @@ export function formatCompactNumber(n: number): string {
 }
 
 export function formatPercent(value: number): string {
-    return `${value.toFixed(1)}%`;
+    return `${Math.round(value * 100)}%`;
 }
