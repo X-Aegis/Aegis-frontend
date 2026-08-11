@@ -16,3 +16,7 @@ export function formatRelativeTime(iso: string): string {
     if (diffDays < 7) return `${diffDays}d ago`;
     return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
+
+export function clamp(value: number, min: number, max: number): number {
+    return value > max ? max : value;
+}
