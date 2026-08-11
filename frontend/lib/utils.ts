@@ -50,3 +50,7 @@ export function formatPercent(value: number): string {
     const compact = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
     return `${compact}%`;
 }
+
+export function pluralize(count: number, singular: string): string {
+    return count === 1 ? `1 ${singular}` : `${count} ${singular}s`;
+}
