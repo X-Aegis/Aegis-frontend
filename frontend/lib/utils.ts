@@ -26,3 +26,5 @@ export function truncateAddress(
     if (address.length <= startChars + endChars + 3) return address;
     return `${address.slice(0, startChars)}...${address.slice(-endChars)}`;
 }
+
+// Additional presentation helpers live here.
