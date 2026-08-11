@@ -1,4 +1,4 @@
-import { formatCompactNumber, formatPercent, truncateAddress } from "./utils";
+import { formatCompactNumber, formatPercent, pluralize, truncateAddress } from "./utils";
 
 describe("truncateAddress", () => {
     it("shortens a full Stellar address, keeping start and end chars", () => {
@@ -59,5 +59,13 @@ describe("formatPercent", () => {
 
     it("handles negative values", () => {
         expect(formatPercent(-0.02)).toBe("-2%");
+    });
+});
+
+describe("pluralize", () => {
+    it("returns count with word", () => {
+        expect(pluralize(1, "strategy")).toBe("1 strategy");
+        expect(pluralize(3, "strategy")).toBe("3 strategy");
+        expect(pluralize(0, "strategy")).toBe("0 strategy");
     });
 });
