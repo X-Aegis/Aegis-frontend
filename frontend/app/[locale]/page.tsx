@@ -36,6 +36,7 @@ import { WithdrawTab } from "../../components/WithdrawTab";
 import { DepositTab } from "../../components/DepositTab";
 import { ReferralLinkCard } from "../../components/ReferralLinkCard";
 import { ReferralStatsCard } from "../../components/ReferralStatsCard";
+import { RewardSummary } from "../../components/RewardSummary";
 import { PartnerDashboard } from "../../components/PartnerDashboard";
 import { CurrencySwitch } from "../../components/CurrencySwitch";
 import { NetworkSwitch } from "../../components/NetworkSwitch";
@@ -347,7 +348,9 @@ export default function Home() {
                 <VaultAPYChart vaultId="main-vault" />
 
                 <TransactionHistoryList />
-                
+
+                <RewardSummary />
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                    <div className="bg-card border border-border p-6 rounded-2xl hover:border-primary/50 transition-colors group cursor-pointer">
                       <div className="flex justify-between items-start mb-4">
