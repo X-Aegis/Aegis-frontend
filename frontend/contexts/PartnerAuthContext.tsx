@@ -1,23 +1,16 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  type ReactNode,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+
+const API_URL = process.env.NEXT_PUBLIC_AI_API_URL;
+const TOKEN_KEY = "aegis_partner_session";
 
 interface Partner {
   id: string;
   name: string;
-  email: string;
   organization: string;
-  role: 'admin' | 'viewer' | 'analyst';
+  role: string;
   permissions: string[];
-  createdAt: string;
-  lastLogin: string;
 }
 
 interface PartnerAuthState {
@@ -33,146 +26,65 @@ interface PartnerAuthContextValue extends PartnerAuthState {
   checkAuth: () => Promise<void>;
 }
 
-const initialState: PartnerAuthState = {
-  isAuthenticated: false,
-  partner: null,
-  isLoading: true,
-  error: null,
-};
+const PartnerAuthContext = createContext<PartnerAuthContextValue | undefined>(undefined);
 
-const mockPartners = [
-  {
-    id: 'partner_001',
-    email: 'partner@ecosystem.com',
-    password: 'PartnerAccess2024!',
-    name: 'Ecosystem Partner Alpha',
-    organization: 'Alpha Ventures',
-    role: 'admin' as const,
-    permissions: ['view_metrics', 'export_data', 'manage_users', 'view_analytics'],
-    createdAt: '2024-01-15T00:00:00Z',
-    lastLogin: '2024-02-25T10:30:00Z',
-  },
-  {
-    id: 'partner_002',
-    email: 'analyst@beta.com',
-    password: 'Analyst2024!',
-    name: 'Beta Analyst',
-    organization: 'Beta Capital',
-    role: 'analyst' as const,
-    permissions: ['view_metrics', 'view_analytics'],
-    createdAt: '2024-02-01T00:00:00Z',
-    lastLogin: '2024-02-24T15:45:00Z',
-  },
-];
-
-const PartnerAuthContext = createContext<PartnerAuthContextValue | undefined>(
-  undefined
-);
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  if (!API_URL) throw new Error("Partner authentication backend is not configured");
+  const response = await fetch(new URL(path, API_URL), init);
+  if (!response.ok) throw new Error((await response.json().catch(() => null))?.detail ?? "Partner request failed");
+  return response.json() as Promise<T>;
+}
 
 export function PartnerAuthProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<PartnerAuthState>(initialState);
+  const [state, setState] = useState<PartnerAuthState>({
+    isAuthenticated: false,
+    partner: null,
+    isLoading: true,
+    error: null,
+  });
 
-  const checkAuth = useCallback(async () => {
-    try {
-      setState((prev) => ({ ...prev, isLoading: true, error: null }));
-
-      const storedAuth = localStorage.getItem('partner_auth');
-      if (storedAuth) {
-        const { partnerId, timestamp } = JSON.parse(storedAuth);
-
-        const now = Date.now();
-        const sessionAge = now - timestamp;
-        const maxAge = 24 * 60 * 60 * 1000;
-
-        if (sessionAge < maxAge) {
-          const partner = mockPartners.find(p => p.id === partnerId);
-          if (partner) {
-            const { password, ...partnerData } = partner;
-            setState({
-              isAuthenticated: true,
-              partner: partnerData,
-              isLoading: false,
-              error: null,
-            });
-            return;
-          }
-        }
-
-        localStorage.removeItem('partner_auth');
-      }
-
-      setState({
-        isAuthenticated: false,
-        partner: null,
-        isLoading: false,
-        error: null,
-      });
-    } catch (error) {
-      setState({
-        isAuthenticated: false,
-        partner: null,
-        isLoading: false,
-        error: error instanceof Error ? error.message : "Authentication check failed",
-      });
-    }
+  const logout = useCallback(() => {
+    localStorage.removeItem(TOKEN_KEY);
+    setState({ isAuthenticated: false, partner: null, isLoading: false, error: null });
   }, []);
 
-  const login = useCallback(async (email: string, password: string): Promise<boolean> => {
+  const checkAuth = useCallback(async () => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) {
+      setState({ isAuthenticated: false, partner: null, isLoading: false, error: null });
+      return;
+    }
+    setState((previous) => ({ ...previous, isLoading: true, error: null }));
     try {
-      setState((prev) => ({ ...prev, isLoading: true, error: null }));
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const partner = mockPartners.find(p => p.email === email && p.password === password);
-
-      if (partner) {
-        const { password: _, ...partnerData } = partner;
-
-        localStorage.setItem('partner_auth', JSON.stringify({
-          partnerId: partner.id,
-          timestamp: Date.now(),
-        }));
-
-        setState({
-          isAuthenticated: true,
-          partner: partnerData,
-          isLoading: false,
-          error: null,
-        });
-
-        return true;
-      } else {
-        setState({
-          isAuthenticated: false,
-          partner: null,
-          isLoading: false,
-          error: "Invalid email or password",
-        });
-        return false;
-      }
-    } catch (error) {
-      setState({
-        isAuthenticated: false,
-        partner: null,
-        isLoading: false,
-        error: error instanceof Error ? error.message : "Login failed",
+      const partner = await request<Partner>("/partner/me", {
+        headers: { Authorization: `Bearer ${token}` },
       });
+      setState({ isAuthenticated: true, partner, isLoading: false, error: null });
+    } catch (error) {
+      logout();
+      setState((previous) => ({ ...previous, error: error instanceof Error ? error.message : "Session expired" }));
+    }
+  }, [logout]);
+
+  const login = useCallback(async (email: string, password: string): Promise<boolean> => {
+    setState((previous) => ({ ...previous, isLoading: true, error: null }));
+    try {
+      const response = await request<{ token: string; partner: Partner }>("/partner/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      localStorage.setItem(TOKEN_KEY, response.token);
+      setState({ isAuthenticated: true, partner: response.partner, isLoading: false, error: null });
+      return true;
+    } catch (error) {
+      setState({ isAuthenticated: false, partner: null, isLoading: false, error: error instanceof Error ? error.message : "Login failed" });
       return false;
     }
   }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem('partner_auth');
-    setState({
-      isAuthenticated: false,
-      partner: null,
-      isLoading: false,
-      error: null,
-    });
-  }, []);
-
   useEffect(() => {
-    checkAuth();
+    void checkAuth();
   }, [checkAuth]);
 
   return (
@@ -184,13 +96,10 @@ export function PartnerAuthProvider({ children }: { children: ReactNode }) {
 
 export function usePartnerAuth(): PartnerAuthContextValue {
   const context = useContext(PartnerAuthContext);
-  if (context === undefined) {
-    throw new Error("usePartnerAuth must be used within a <PartnerAuthProvider>");
-  }
+  if (!context) throw new Error("usePartnerAuth must be used within a <PartnerAuthProvider>");
   return context;
 }
 
 export function hasPermission(partner: Partner | null, permission: string): boolean {
-  if (!partner) return false;
-  return partner.permissions.includes(permission);
+  return partner?.permissions.includes(permission) ?? false;
 }

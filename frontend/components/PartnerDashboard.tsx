@@ -2,8 +2,7 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { BarChart3, Building2, CheckCircle2, KeyRound, LineChart, Lock, TrendingUp, Users } from "lucide-react";
-
-const PARTNER_ACCESS_CODE = "AEGIS-PARTNER-2026";
+import { usePartnerAuth } from "@/contexts/PartnerAuthContext";
 
 const partnerMetrics = [
   { label: "Partner TVL", value: "$8.42M", change: "+18.7%", helper: "Assets sourced through active partner channels" },
@@ -27,26 +26,19 @@ const funnelStages = [
 ];
 
 export function PartnerDashboard() {
-  const [accessCode, setAccessCode] = useState("");
+  const { isAuthenticated, isLoading, error: authError, login, logout, partner } = usePartnerAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [partnerName, setPartnerName] = useState("GrantFox Capital");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [error, setError] = useState("");
 
   const partnerInitials = useMemo(
     () => partnerName.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "GP",
     [partnerName]
   );
 
-  const authenticatePartner = (event: FormEvent<HTMLFormElement>) => {
+  const authenticatePartner = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    if (accessCode.trim().toUpperCase() !== PARTNER_ACCESS_CODE) {
-      setError("Enter the active partner access code to unlock ecosystem metrics.");
-      return;
-    }
-
-    setError("");
-    setIsAuthenticated(true);
+    await login(email, password);
   };
 
   if (!isAuthenticated) {
@@ -75,22 +67,27 @@ export function PartnerDashboard() {
                 placeholder="Organization name"
               />
             </label>
-            <label className="block space-y-2">
-              <span className="text-sm font-semibold">Access code</span>
-              <div className="relative">
+             <label className="block space-y-2">
+               <span className="text-sm font-semibold">Partner email</span>
+               <div className="relative">
                 <KeyRound className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
-                  value={accessCode}
-                  onChange={(event) => setAccessCode(event.target.value)}
-                  className="w-full rounded-xl border border-border bg-background pl-11 pr-4 py-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                  placeholder="AEGIS-PARTNER-2026"
-                  aria-describedby={error ? "partner-auth-error" : undefined}
-                />
-              </div>
-            </label>
-            {error && <p id="partner-auth-error" className="text-sm font-medium text-red-500">{error}</p>}
-            <button type="submit" className="w-full rounded-xl bg-primary px-4 py-3 font-bold text-primary-foreground hover:bg-primary/90 transition-colors">
-              Unlock partner metrics
+                   value={email}
+                   onChange={(event) => setEmail(event.target.value)}
+                   className="w-full rounded-xl border border-border bg-background pl-11 pr-4 py-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                   placeholder="partner@example.com"
+                   type="email"
+                   aria-describedby={authError ? "partner-auth-error" : undefined}
+                 />
+               </div>
+             </label>
+             <label className="block space-y-2">
+               <span className="text-sm font-semibold">Password</span>
+               <input value={password} onChange={(event) => setPassword(event.target.value)} type="password" className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary" />
+             </label>
+             {authError && <p id="partner-auth-error" className="text-sm font-medium text-red-500">{authError}</p>}
+             <button type="submit" disabled={isLoading} className="w-full rounded-xl bg-primary px-4 py-3 font-bold text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-60">
+               {isLoading ? "Authenticating…" : "Unlock partner metrics"}
             </button>
           </form>
         </div>
@@ -104,18 +101,19 @@ export function PartnerDashboard() {
         <div>
           <p className="text-xs uppercase tracking-[0.3em] text-primary font-bold">Strategic partner view</p>
           <h1 className="text-3xl font-extrabold tracking-tight mt-2">Welcome, {partnerName}</h1>
-          <p className="text-muted-foreground mt-2">Data-intensive metrics for partner-sourced assets, onboarding funnels, and ecosystem risk.</p>
+           <p className="text-muted-foreground mt-2">Data-intensive metrics for partner-sourced assets, onboarding funnels, and ecosystem risk.</p>
         </div>
         <div className="bg-card border border-border rounded-2xl p-4 flex items-center gap-3 self-start">
           <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-black">{partnerInitials}</div>
           <div>
             <p className="font-bold">Authenticated partner</p>
-            <p className="text-xs text-muted-foreground flex items-center gap-1"><CheckCircle2 className="w-3 h-3 text-green-500" /> Metrics synced 2 min ago</p>
+           <p className="text-xs text-muted-foreground flex items-center gap-1"><CheckCircle2 className="w-3 h-3 text-green-500" /> {partner?.organization ?? partnerName}</p>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+       <button type="button" onClick={logout} className="rounded-xl border border-border px-4 py-2 text-sm">Sign out</button>
+       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
         {partnerMetrics.map((metric) => (
           <div key={metric.label} className="bg-card border border-border rounded-2xl p-5">
             <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold">{metric.label}</p>
