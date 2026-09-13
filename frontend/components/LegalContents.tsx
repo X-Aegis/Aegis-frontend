@@ -1,7 +1,7 @@
 export const TermsOfServiceContent = () => (
   <div className="space-y-4">
     <p>
-      Welcome to X-Aegis. By accessing or using our platform, you agree to be bound by these Terms of Service. Please read them carefully.
+      Welcome to XHedge (Aegis). By accessing or using our platform, you agree to be bound by these Terms of Service. Please read them carefully.
     </p>
     
     <h3 className="text-lg font-semibold text-foreground mt-6 mb-2">1. Acceptance of Terms</h3>
@@ -11,12 +11,12 @@ export const TermsOfServiceContent = () => (
     
     <h3 className="text-lg font-semibold text-foreground mt-6 mb-2">2. Description of Service</h3>
     <p>
-      X-Aegis provides a decentralized vault and automated rebalancing system (&quot;Keeper Bot&quot;). We do not hold custody of your private keys. You are solely responsible for the security of your wallet.
+      XHedge (Aegis) provides a decentralized vault and automated rebalancing system (&quot;Keeper Bot&quot;). We do not hold custody of your private keys. You are solely responsible for the security of your wallet.
     </p>
     
     <h3 className="text-lg font-semibold text-foreground mt-6 mb-2">3. Risks and Liabilities</h3>
     <p>
-      Using decentralized finance (DeFi) protocols involves significant risks, including but not limited to smart contract vulnerabilities, market volatility, and loss of funds. X-Aegis is provided &quot;as is&quot; without any warranties. We shall not be liable for any direct or indirect losses incurred while using the platform.
+      Using decentralized finance (DeFi) protocols involves significant risks, including but not limited to smart contract vulnerabilities, market volatility, and loss of funds. XHedge (Aegis) is provided &quot;as is&quot; without any warranties. We shall not be liable for any direct or indirect losses incurred while using the platform.
     </p>
     
     <h3 className="text-lg font-semibold text-foreground mt-6 mb-2">4. User Obligations</h3>
@@ -33,7 +33,7 @@ export const TermsOfServiceContent = () => (
 export const PrivacyPolicyContent = () => (
   <div className="space-y-4">
     <p>
-      At X-Aegis, we take your privacy seriously. This Privacy Policy explains how we handle data when you interact with our decentralized application.
+      At XHedge (Aegis), we take your privacy seriously. This Privacy Policy explains how we handle data when you interact with our decentralized application.
     </p>
     
     <h3 className="text-lg font-semibold text-foreground mt-6 mb-2">1. Data Collection</h3>

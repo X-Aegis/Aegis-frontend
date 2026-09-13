@@ -54,7 +54,7 @@ export default function TermsModal({
         <Alert>
           <FileText className="h-4 w-4" />
           <AlertDescription>
-            Please read these Terms of Service carefully before using X-Aegis.
+            Please read these Terms of Service carefully before using XHedge (Aegis).
             By using our service, you agree to these terms.
           </AlertDescription>
         </Alert>
@@ -70,7 +70,7 @@ export default function TermsModal({
                 1. Acceptance of Terms
               </h3>
               <p className="text-muted-foreground leading-relaxed">
-                By accessing and using X-Aegis (&quot;the Service&quot;), you acknowledge that you have read,
+                By accessing and using XHedge (Aegis) (&quot;the Service&quot;), you acknowledge that you have read,
                 understood, and agree to be bound by these Terms of Service (&quot;Terms&quot;).
                 If you do not agree to these Terms, you may not access or use the Service.
               </p>
@@ -79,7 +79,7 @@ export default function TermsModal({
             <section>
               <h3 className="text-lg font-semibold mb-3">2. Description of Service</h3>
               <p className="text-muted-foreground leading-relaxed">
-                X-Aegis is a decentralized finance (DeFi) platform built on the Stellar network
+                XHedge (Aegis) is a decentralized finance (DeFi) platform built on the Stellar network
                 that provides automated volatility protection and yield farming strategies. The Service
                 allows users to deposit digital assets and participate in various DeFi strategies
                 through smart contracts.
@@ -113,8 +113,8 @@ export default function TermsModal({
             <section>
               <h3 className="text-lg font-semibold mb-3">5. Limitation of Liability</h3>
               <p className="text-muted-foreground leading-relaxed">
-                X-Aegis is provided &quot;as is&quot; without warranties of any kind. In no event shall
-                X-Aegis, its developers, or affiliates be liable for any indirect, incidental,
+                XHedge (Aegis) is provided &quot;as is&quot; without warranties of any kind. In no event shall
+                XHedge (Aegis), its developers, or affiliates be liable for any indirect, incidental,
                 special, or consequential damages arising out of or in connection with your use of the Service.
               </p>
             </section>
@@ -122,7 +122,7 @@ export default function TermsModal({
             <section>
               <h3 className="text-lg font-semibold mb-3">6. Intellectual Property</h3>
               <p className="text-muted-foreground leading-relaxed">
-                The Service and its original content, features, and functionality are owned by X-Aegis
+                The Service and its original content, features, and functionality are owned by XHedge (Aegis)
                 and are protected by international copyright, trademark, and other intellectual property laws.
               </p>
             </section>
@@ -147,7 +147,7 @@ export default function TermsModal({
               <h3 className="text-lg font-semibold mb-3">9. Governing Law</h3>
               <p className="text-muted-foreground leading-relaxed">
                 These Terms shall be governed by and construed in accordance with the laws of the
-                jurisdiction in which X-Aegis operates, without regard to conflict of law provisions.
+                jurisdiction in which XHedge (Aegis) operates, without regard to conflict of law provisions.
               </p>
             </section>
 

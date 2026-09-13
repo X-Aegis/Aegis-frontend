@@ -209,8 +209,8 @@ export default function Home() {
             onClick={() => setActiveTab("dashboard")}
             className={`flex items-center gap-2 shrink-0 rounded-lg transition-transform hover:opacity-80 ${focusVisibleClass}`}
           >
-            <Image src="/logo.png" alt="X-Aegis Logo" width={40} height={40} className="shrink-0 rounded-lg" />
-            <span className="hidden sm:inline text-lg sm:text-xl font-bold tracking-tight">X-Aegis</span>
+            <Image src="/logo.png" alt="XHedge (Aegis) Logo" width={40} height={40} className="shrink-0 rounded-lg" />
+            <span className="hidden sm:inline text-lg sm:text-xl font-bold tracking-tight">XHedge (Aegis)</span>
           </button>
           <nav className="hidden md:flex gap-8 text-sm font-medium text-muted-foreground items-center" aria-label="Main navigation">
             <button
@@ -442,7 +442,7 @@ export default function Home() {
             <div className="lg:col-span-2 space-y-6">
               <div className="mb-2">
                 <h1 className="text-3xl font-extrabold tracking-tight mb-2">Referral Rewards</h1>
-                <p className="text-muted-foreground">Share X-Aegis with your network and earn a percentage of their protocol fees.</p>
+                <p className="text-muted-foreground">Share XHedge (Aegis) with your network and earn a percentage of their protocol fees.</p>
               </div>
               <ReferralLinkCard />
               <ReferralStatsCard />
@@ -521,4 +521,3 @@ export default function Home() {
     </main>
   );
 }
-

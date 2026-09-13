@@ -140,8 +140,8 @@ export function TourProvider({ children }: TourProviderProps) {
     () => ({
       home: [
         {
-          title: "Welcome to X-Aegis",
-          content: "X-Aegis acts as a 'Micro hedge fund for everyday Africans.' Use the 'Show me around' button to get started.",
+          title: "Welcome to XHedge (Aegis)",
+          content: "XHedge (Aegis) acts as a 'Micro hedge fund for everyday Africans.' Use the 'Show me around' button to get started.",
           layout: 'welcome',
         },
         {

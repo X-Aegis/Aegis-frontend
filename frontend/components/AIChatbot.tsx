@@ -11,7 +11,7 @@ interface Message {
 export function AIChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: "ai", content: "Hello! I'm the X-Aegis AI assistant. Ask me anything about your portfolio or our vaults." }
+    { role: "ai", content: "Hello! I'm the XHedge (Aegis) AI assistant. Ask me anything about your portfolio or our vaults." }
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);

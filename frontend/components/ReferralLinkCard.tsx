@@ -30,7 +30,7 @@ export function ReferralLinkCard() {
           <CardTitle>Share Your Link</CardTitle>
         </div>
         <CardDescription>
-          Invite your friends to X-Aegis and earn rewards on every deposit they make.
+          Invite your friends to XHedge (Aegis) and earn rewards on every deposit they make.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

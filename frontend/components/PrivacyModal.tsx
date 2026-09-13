@@ -55,7 +55,7 @@ export default function PrivacyModal({
           <Shield className="h-4 w-4" />
           <AlertDescription>
             Your privacy is important to us. This Privacy Policy explains how we collect,
-            use, and protect your information when you use X-Aegis.
+            use, and protect your information when you use XHedge (Aegis).
           </AlertDescription>
         </Alert>
 
@@ -120,7 +120,7 @@ export default function PrivacyModal({
                 5. International Data Transfers
               </h3>
               <p className="text-muted-foreground leading-relaxed">
-                X-Aegis operates globally and may transfer your data to countries other than your own.
+                XHedge (Aegis) operates globally and may transfer your data to countries other than your own.
                 We ensure appropriate safeguards are in place to protect your data in accordance with
                 applicable data protection laws.
               </p>
