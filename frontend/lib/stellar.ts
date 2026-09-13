@@ -438,22 +438,10 @@ export async function submitTransaction(
 
 const STROOPS_PER_XLM = 10_000_000;
 
-export interface GovernanceProposal {
-  id: string;
-  title: string;
-  description: string;
-  approvals: number;
-  threshold: number;
-  executed: boolean;
-  proposedAt: number;
-  timelockEndsAt: number;
-  status: "pending" | "approved" | "executed";
-}
-
-interface GovernanceSummary {
+export interface GovernanceSummary {
   guardians: string[];
   threshold: number;
-  active_proposal_count: number;
+  proposalIds: string[];
 }
 
 interface BuildContractCallOptions {
@@ -650,26 +638,42 @@ export async function getGovernanceSummary(
     const xdrString = await buildContractCallXdr({
       contractId,
       sourceAddress,
-      method: "get_governance_summary",
+      method: "get_guardians",
       network,
     });
 
-    const { result, error } = await simulateContractRead<any>(xdrString, network);
-    if (error || !result) {
-      return { summary: null, error: error || "Failed to read governance summary" };
+    const guardiansRead = await simulateContractRead<unknown>(xdrString, network);
+    if (guardiansRead.error || !Array.isArray(guardiansRead.result)) {
+      return { summary: null, error: guardiansRead.error || "Failed to read guardians" };
     }
 
-    const guardians = Array.isArray(result.guardians)
-      ? result.guardians.map((g: unknown) => String(g))
-      : [];
-    const threshold = Number(result.threshold || 0);
-    const activeProposalCount = Number(result.active_proposal_count || 0);
+    const thresholdXdr = await buildContractCallXdr({
+      contractId,
+      sourceAddress,
+      method: "get_threshold",
+      network,
+    });
+    const thresholdRead = await simulateContractRead<unknown>(thresholdXdr, network);
+    if (thresholdRead.error || thresholdRead.result === null) {
+      return { summary: null, error: thresholdRead.error || "Failed to read threshold" };
+    }
+
+    const proposalIdsXdr = await buildContractCallXdr({
+      contractId,
+      sourceAddress,
+      method: "get_proposal_ids",
+      network,
+    });
+    const proposalIdsRead = await simulateContractRead<unknown>(proposalIdsXdr, network);
+    if (proposalIdsRead.error || !Array.isArray(proposalIdsRead.result)) {
+      return { summary: null, error: proposalIdsRead.error || "Failed to read proposal IDs" };
+    }
 
     return {
       summary: {
-        guardians,
-        threshold,
-        active_proposal_count: activeProposalCount,
+        guardians: guardiansRead.result.map((guardian) => String(guardian)),
+        threshold: Number(thresholdRead.result),
+        proposalIds: proposalIdsRead.result.map((id) => String(id)),
       },
       error: null,
     };
@@ -681,56 +685,27 @@ export async function getGovernanceSummary(
   }
 }
 
-export async function getProposals(
+export async function getProposal(
   contractId: string,
   sourceAddress: string,
-  network: NetworkType = NetworkType.TESTNET
-): Promise<{ proposals: GovernanceProposal[]; error: string | null }> {
-  const { summary, error } = await getGovernanceSummary(contractId, sourceAddress, network);
-  if (error || !summary) {
-    const now = Math.floor(Date.now() / 1000);
-    return {
-      proposals: [
-        {
-          id: "1",
-          title: "Proposal #1",
-          description: "Fallback proposal while governance RPC is unavailable.",
-          approvals: 1,
-          threshold: 2,
-          executed: false,
-          proposedAt: now - 600,
-          timelockEndsAt: now + 3600,
-          status: "pending",
-        },
-      ],
-      error: error || "Failed to load proposals",
-    };
+  proposalId: string,
+  network: NetworkType = NetworkType.TESTNET,
+): Promise<{ proposal: unknown | null; error: string | null }> {
+  try {
+    const xdrString = await buildContractCallXdr({
+      contractId,
+      sourceAddress,
+      method: "get_proposal",
+      args: [nativeToScVal(BigInt(proposalId), { type: "u64" })],
+      network,
+    });
+    return simulateContractRead<unknown>(xdrString, network).then(({ result, error }) => ({
+      proposal: result,
+      error,
+    }));
+  } catch (error) {
+    return { proposal: null, error: error instanceof Error ? error.message : "Failed to read proposal" };
   }
-
-  const now = Math.floor(Date.now() / 1000);
-  const timelockSeconds = 24 * 60 * 60;
-
-  const proposals: GovernanceProposal[] = Array.from(
-    { length: Math.max(summary.active_proposal_count, 0) },
-    (_, idx) => {
-      const id = idx + 1;
-      const approvals = Math.max(0, Math.min(summary.threshold - 1, 1 + (idx % 2)));
-      const proposedAt = now - idx * 3600;
-      return {
-        id: String(id),
-        title: `Proposal #${id}`,
-        description: "On-chain governance proposal loaded from contract summary.",
-        approvals,
-        threshold: summary.threshold,
-        executed: false,
-        proposedAt,
-        timelockEndsAt: proposedAt + timelockSeconds,
-        status: approvals >= summary.threshold ? "approved" : "pending",
-      };
-    }
-  );
-
-  return { proposals, error: null };
 }
 
 export async function buildCastVoteXdr(
@@ -753,10 +728,25 @@ export async function buildCastVoteXdr(
   });
 }
 
+export async function buildApproveActionXdr(
+  contractId: string,
+  userAddress: string,
+  proposalId: string,
+  network: NetworkType = NetworkType.TESTNET,
+): Promise<string> {
+  return buildContractCallXdr({
+    contractId,
+    sourceAddress: userAddress,
+    method: "approve_action",
+    args: [new Address(userAddress).toScVal(), nativeToScVal(BigInt(proposalId), { type: "u64" })],
+    network,
+  });
+}
+
 export async function buildProposeActionXdr(
   contractId: string,
   userAddress: string,
-  title: string,
+  paused: boolean,
   network: NetworkType = NetworkType.TESTNET
 ): Promise<string> {
   return buildContractCallXdr({
@@ -765,12 +755,8 @@ export async function buildProposeActionXdr(
     method: "propose_action",
     args: [
       new Address(userAddress).toScVal(),
-      xdr.ScVal.scvMap([
-        new xdr.ScMapEntry({
-          key: xdr.ScVal.scvSymbol("title"),
-          val: nativeToScVal(title || "Untitled Action"),
-        }),
-      ]),
+      // ActionType::SetPaused(bool) is a Soroban enum tuple.
+      xdr.ScVal.scvVec([xdr.ScVal.scvSymbol("SetPaused"), nativeToScVal(paused)]),
     ],
     network,
   });

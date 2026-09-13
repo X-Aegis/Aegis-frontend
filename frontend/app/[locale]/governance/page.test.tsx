@@ -9,6 +9,10 @@ jest.mock('next-intl', () => ({
       (params ? ` ${JSON.stringify(params)}` : ''),
 }));
 
+jest.mock('@/contexts/FreighterContext', () => ({ useFreighter: () => ({ address: null }) }));
+jest.mock('@/contexts/NetworkContext', () => ({ useNetwork: () => ({ network: 'testnet' }) }));
+jest.mock('@/hooks/useContractAddress', () => ({ useContractAddress: () => 'C'.padEnd(56, 'A') }));
+
 import GovernancePage from './page';
 
 describe('GovernancePage', () => {
@@ -17,19 +21,9 @@ describe('GovernancePage', () => {
     expect(screen.getByText(/governance.title/)).toBeInTheDocument();
   });
 
-  it('renders placeholder proposal cards shaped like on-chain proposals', () => {
+  it('does not render fabricated proposal cards without a wallet read', () => {
     render(<GovernancePage />);
-
-    const cards = screen.getAllByTestId('proposal-card');
-    expect(cards).toHaveLength(3);
-
-    // Status chips cover pending, timelock and executed states
-    expect(screen.getByText(/status_pending/)).toBeInTheDocument();
-    expect(screen.getByText(/status_timelock/)).toBeInTheDocument();
-    expect(screen.getByText(/status_executed/)).toBeInTheDocument();
-
-    // Vote tally bars are present with aria labels
-    const tallies = screen.getAllByRole('img');
-    expect(tallies[0].getAttribute('aria-label')).toContain('governance.tally_aria');
+    expect(screen.queryByTestId('proposal-card')).not.toBeInTheDocument();
+    expect(screen.getByText(/Connect a wallet/)).toBeInTheDocument();
   });
 });

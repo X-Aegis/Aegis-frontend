@@ -107,12 +107,19 @@ export default function SimulatePage() {
   const [volatilityShockPercent, setVolatilityShockPercent] = useState(20);
   const [result, setResult] = useState<ScenarioResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const portfolioValueUsd = baseBalance > 0 ? baseBalance : 5_000;
+  const portfolioValueUsd = baseBalance;
 
   useEffect(() => {
     const controller = new AbortController();
+    if (portfolioValueUsd <= 0) {
+      setResult(null);
+      setError("Portfolio value is unavailable; connect a wallet with a readable balance.");
+      return () => controller.abort();
+    }
     setIsLoading(true);
+    setError(null);
 
     const timeout = setTimeout(() => {
       simulateScenario(
@@ -120,6 +127,10 @@ export default function SimulatePage() {
         controller.signal,
       )
         .then(setResult)
+        .catch((requestError: unknown) => {
+          if (!controller.signal.aborted) setError(requestError instanceof Error ? requestError.message : "Simulation unavailable");
+          setResult(null);
+        })
         .finally(() => setIsLoading(false));
       // Debounced so dragging a slider doesn't fire a request per pixel.
     }, 250);
@@ -194,7 +205,9 @@ export default function SimulatePage() {
             )}
           </div>
 
-          {isLoading || !result ? (
+          {error ? (
+            <div className="h-64 flex items-center justify-center text-center text-sm text-muted-foreground">{error}</div>
+          ) : isLoading || !result ? (
             <div className="h-64 flex items-center justify-center">
               <div className="animate-spin h-6 w-6 border-4 border-primary border-t-transparent rounded-full" />
             </div>
