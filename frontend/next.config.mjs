@@ -22,6 +22,7 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
+  outputFileTracingRoot: new URL('..', import.meta.url).pathname,
   async headers() {
     return [
       {
